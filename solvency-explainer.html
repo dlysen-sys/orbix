@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Funding the ORBIX payouts</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#f4f7fa; --surface:#ffffff; --surface-2:#eef2f7; --line:#d9e2ec; --line-strong:#c3d0de;
+    --ink:#101a28; --muted:#54687e; --faint:#7c8da0;
+    --accent:#4f7a00; --accent-fill:#84c400; --accent-ink:#ffffff;
+    --trading:#3672d6; --pos:#2e8b3d; --warn:#b7791f; --crit:#c8412f;
+    --shadow:0 1px 2px rgba(16,26,40,.05), 0 8px 28px rgba(16,26,40,.06);
+  }
+  @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+    --bg:#0a0f17; --surface:#111a26; --surface-2:#0e1620; --line:#1e2a3a; --line-strong:#2b3a4e;
+    --ink:#e9f0f8; --muted:#93a4b9; --faint:#6c7f96;
+    --accent:#c6f24e; --accent-fill:#c6f24e; --accent-ink:#0a0f17;
+    --trading:#6ea8fe; --pos:#7ee08a; --warn:#f0c05a; --crit:#ff7a68;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 34px rgba(0,0,0,.4);
+  }}
+  :root[data-theme="dark"]{
+    --bg:#0a0f17; --surface:#111a26; --surface-2:#0e1620; --line:#1e2a3a; --line-strong:#2b3a4e;
+    --ink:#e9f0f8; --muted:#93a4b9; --faint:#6c7f96;
+    --accent:#c6f24e; --accent-fill:#c6f24e; --accent-ink:#0a0f17;
+    --trading:#6ea8fe; --pos:#7ee08a; --warn:#f0c05a; --crit:#ff7a68;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 34px rgba(0,0,0,.4);
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--bg); color:var(--ink); font-family:"IBM Plex Sans",system-ui,sans-serif; font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased}
+  .wrap{max-width:920px; margin:0 auto; padding:clamp(20px,5vw,64px) clamp(16px,4vw,40px) 80px}
+  h1,h2,h3{font-family:"Sora",system-ui,sans-serif; text-wrap:balance; margin:0}
+  .mono{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums}
+  .eyebrow{font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--accent); font-weight:600}
+  header h1{font-size:clamp(30px,6vw,46px); font-weight:700; line-height:1.08; margin:14px 0 0; letter-spacing:-.02em}
+  .lede{color:var(--muted); font-size:clamp(16px,2.2vw,18px); margin:16px 0 0; max-width:62ch}
+  .assume{display:inline-flex; align-items:center; gap:10px; margin-top:22px; padding:9px 16px; border-radius:999px; background:var(--surface); border:1px solid var(--line-strong); font-size:14px; box-shadow:var(--shadow)}
+  .assume b{color:var(--ink)} .assume .dot{width:8px;height:8px;border-radius:99px;background:var(--accent-fill)}
+  section{margin-top:56px}
+  .sec-head{display:flex; align-items:baseline; gap:14px; margin-bottom:20px; border-bottom:1px solid var(--line); padding-bottom:12px}
+  .sec-idx{font-family:"IBM Plex Mono",monospace; font-size:13px; color:var(--faint); font-weight:500}
+  .sec-head h2{font-size:clamp(20px,3.4vw,26px); font-weight:600; letter-spacing:-.01em}
+  .sec-head .tag{margin-left:auto; font-size:12.5px; color:var(--muted); font-family:"IBM Plex Mono",monospace}
+  p{margin:0 0 14px} .muted{color:var(--muted)}
+  .card{background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:22px; box-shadow:var(--shadow)}
+  .tbl-wrap{overflow-x:auto; border:1px solid var(--line); border-radius:14px; background:var(--surface); box-shadow:var(--shadow)}
+  table{border-collapse:collapse; width:100%; font-size:14.5px}
+  th,td{text-align:right; padding:12px 16px; white-space:nowrap}
+  th:first-child,td:first-child{text-align:left}
+  thead th{font-family:"IBM Plex Mono",monospace; font-size:11.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:600; background:var(--surface-2); border-bottom:1px solid var(--line-strong)}
+  tbody tr{border-top:1px solid var(--line)} tbody tr:first-child{border-top:0}
+  td.dim{color:var(--muted)}
+  .pos{color:var(--pos); font-weight:600} .warn{color:var(--warn); font-weight:600} .crit{color:var(--crit); font-weight:600}
+  .accent{color:var(--accent); font-weight:600}
+  tr.hi td{background:color-mix(in srgb, var(--accent-fill) 13%, var(--surface))}
+  .stats{display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
+  @media(max-width:640px){.stats{grid-template-columns:1fr}}
+  .stat{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px; box-shadow:var(--shadow)}
+  .stat .k{font-size:12px; color:var(--muted); font-family:"IBM Plex Mono",monospace; letter-spacing:.04em}
+  .stat .v{font-family:"Sora",sans-serif; font-weight:700; font-size:clamp(23px,4vw,30px); letter-spacing:-.02em; margin-top:6px; font-variant-numeric:tabular-nums}
+  .stat .u{font-size:12.5px; color:var(--muted); margin-top:2px}
+  .stat.trade .v{color:var(--trading)} .stat.owe .v{color:var(--crit)}
+  .note{display:flex; gap:12px; padding:14px 16px; border-radius:12px; background:var(--surface-2); border:1px solid var(--line); font-size:14px; color:var(--muted); margin-top:16px}
+  .note b{color:var(--ink)} .note .m{flex:none; color:var(--accent)}
+  .note.crit{border-color:color-mix(in srgb,var(--crit) 45%,var(--line)); background:color-mix(in srgb,var(--crit) 8%,var(--surface-2))} .note.crit .m{color:var(--crit)}
+  code{font-family:"IBM Plex Mono",monospace; background:var(--surface-2); border:1px solid var(--line); border-radius:6px; padding:1px 6px; font-size:.9em; color:var(--ink)}
+  footer{margin-top:64px; padding-top:20px; border-top:1px solid var(--line); color:var(--faint); font-size:13px}
+  footer p{margin:0 0 8px}
+  .big-eq{font-family:"IBM Plex Mono",monospace; text-align:center; font-size:clamp(14px,2.6vw,17px); line-height:1.9}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">ORBIX · Solvency</div>
+    <h1>Funding the payouts</h1>
+    <p class="lede">The trading allocation (40% of every stake) is what must generate the yield that pays members. This is the ball-figure view: how much lands in the trading fund, how much it owes, and the trading return that closes the gap.</p>
+    <div class="assume"><span class="dot"></span>Scale: <b>&nbsp;1,000 members × 1,000 USDT = 1,000,000 USDT staked</b></div>
+  </header>
+
+  <!-- headline -->
+  <section>
+    <div class="sec-head"><span class="sec-idx">A</span><h2>What lands vs what's owed</h2></div>
+    <div class="stats">
+      <div class="stat trade"><div class="k">TRADING FUND RECEIVES</div><div class="v">400,000</div><div class="u">40% of the 1,000,000 staked</div></div>
+      <div class="stat owe"><div class="k">PASSIVE OWED (one-time)</div><div class="v">1,188,000</div><div class="u">118.8% of stakes, over 12 mo</div></div>
+      <div class="stat owe"><div class="k">OVERRIDE OWED (per year)</div><div class="v">456,000</div><div class="u">perpetual, at Rank-5 tops · 0.5% mult</div></div>
+    </div>
+    <div class="note crit"><span class="m">▲</span><div>The trading fund holds <b>400,000</b>, but the payouts it must generate run <b>well past a million a year</b> (passive <b>1,188,000</b> one-time + override <b>456,000</b>/yr and climbing). The override — <b>perpetual</b> and rank-scaled — is the dominant ongoing liability. This page shows why, and what the <b>multiplier</b> has to be for trading to keep up.</div></div>
+  </section>
+
+  <!-- per 1000 unit -->
+  <section>
+    <div class="sec-head"><span class="sec-idx">B</span><h2>Per 1,000 USDT stake</h2><span class="tag">allocated vs owed</span></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Flow</th><th>Direction</th><th>Amount</th><th>Nature</th></tr></thead>
+        <tbody>
+          <tr><td>Trading fund</td><td class="dim">in</td><td class="mono" style="color:var(--trading);font-weight:600">+400</td><td class="dim">capital to trade</td></tr>
+          <tr><td>Buffer (override + referral reserve)</td><td class="dim">in</td><td class="mono">+350</td><td class="dim">250 override · 100 referral</td></tr>
+          <tr class="hi"><td>Staking passive → the staker</td><td class="dim">out</td><td class="mono crit">−1,188</td><td class="dim">over 12 mo, then stops</td></tr>
+          <tr><td>Referral → uplines</td><td class="dim">out</td><td class="mono">−100</td><td class="dim pos">covered by the buffer ✓</td></tr>
+          <tr><td>Override → upline chain</td><td class="dim">out</td><td class="mono crit">−37.50 to −75 / mo</td><td class="dim">perpetual · rank-dependent</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note"><span class="m">◆</span><div><b>Referral is self-funded</b> (the 100 reserve exactly covers the 100 paid). The <b>passive</b> and the <b>override</b> are what the trading fund must generate — and only 400 came in to do it.</div></div>
+  </section>
+
+  <!-- why override telescopes -->
+  <section>
+    <div class="sec-head"><span class="sec-idx">C</span><h2>Why the override is the hard part</h2></div>
+    <p class="muted">Override differentials <b style="color:var(--ink)">telescope</b> up each chain — every level earns the gap to the one below, and the gaps sum to the top rank. So the <b style="color:var(--ink)">total</b> override paid on a unit of volume is simply:</p>
+    <div class="card"><div class="big-eq">total override / day = volume × <b class="accent">multiplier</b> × <b class="accent">top rank rate</b></div>
+      <p class="muted" style="text-align:center;margin:14px 0 0;font-size:13.5px">At the current <b style="color:var(--ink)">0.5% multiplier</b> with <b style="color:var(--ink)">Rank-5 (25%)</b> leaders on top: <code>0.125% of volume / day</code> — that's <b class="crit">≈ 45.6% of the volume per year</b>, and it doesn't stop (volume is monotonic; it only winds down through breakaway).</p>
+    </div>
+    <div class="note"><span class="m">◆</span><div>Higher-ranked tops make it worse: a <b>Rank-10 (50%)</b> top = 0.25%/day = ~91%/year of volume. Lower ranks or breakaway make it better. The number below assumes Rank-5 tops as a mid-case.</div></div>
+  </section>
+
+  <!-- the lever -->
+  <section>
+    <div class="sec-head"><span class="sec-idx">D</span><h2>The multiplier is the lever</h2><span class="tag">on 1,000,000 volume · Rank-5 tops</span></div>
+    <p class="muted">The override liability scales linearly with the multiplier — so does the trading return you'd need to fund it. The table shows the annual override bill and the return the <b style="color:var(--ink)">400,000</b> trading fund must earn to cover it:</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Multiplier</th><th>Override / day</th><th>Override / year</th><th>Trading ROI needed</th><th>Fundable?</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">2.0%</td><td class="mono">5,000</td><td class="mono crit">1,825,000</td><td class="mono crit">456% / yr</td><td class="crit">no</td></tr>
+          <tr><td class="mono">1.0%</td><td class="mono">2,500</td><td class="mono warn">912,500</td><td class="mono warn">228% / yr</td><td class="warn">unlikely</td></tr>
+          <tr><td class="mono">0.5% <span class="dim">(current)</span></td><td class="mono">1,250</td><td class="mono warn">456,250</td><td class="mono warn">114% / yr</td><td class="warn">stretch</td></tr>
+          <tr class="hi"><td class="mono">0.1%</td><td class="mono">250</td><td class="mono pos">91,250</td><td class="mono pos">≈ 23% / yr</td><td class="pos">realistic</td></tr>
+          <tr><td class="mono">0.05%</td><td class="mono">125</td><td class="mono pos">45,625</td><td class="mono pos">≈ 11% / yr</td><td class="pos">comfortable</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note crit"><span class="m">▲</span><div>At the current <b>0.5% multiplier</b> the override would need the trading desk to return <b>~114% per year</b> — a stretch, not comfortable. To fund the override from realistic trading profit (say <b>20–25% / year</b>), the multiplier needs to be around <b>0.1% (10 bps)</b> — roughly a <b>5× reduction</b> from today's 50 bps. That is the single dial that makes the model self-funding.</div></div>
+  </section>
+
+  <!-- passive side -->
+  <section>
+    <div class="sec-head"><span class="sec-idx">E</span><h2>And the passive, separately</h2><span class="tag">bounded, one-time</span></div>
+    <p class="muted">The staking passive is a fixed <b style="color:var(--ink)">118.8%</b> per Starter stake, paid over the 12-month lock, then it stops. It's not perpetual, but it's still steep against the 40% that funds it:</p>
+    <div class="stats">
+      <div class="stat"><div class="k">Trading fund holds</div><div class="v" style="color:var(--trading)">400,000</div><div class="u">40% of stakes</div></div>
+      <div class="stat"><div class="k">Passive owed (12 mo)</div><div class="v" style="color:var(--crit)">1,188,000</div><div class="u">≈ 99,000 / month</div></div>
+      <div class="stat"><div class="k">Trading must ≈</div><div class="v" style="color:var(--warn)">3×</div><div class="u">≈ 25% / month, for 12 mo</div></div>
+    </div>
+    <div class="note"><span class="m">◆</span><div>Even setting the override aside, trading must roughly <b>triple</b> its 40% allocation over the lock to cover the passive. Because passive is capped per stake and paid over time (and claims only pay up to the vault surplus), it's manageable with steady tops-ups — the override is the part that needs the multiplier dialed down.</div></div>
+  </section>
+
+  <footer>
+    <p><b style="color:var(--muted)">How these are derived:</b> override total = volume × multiplier × top-rank-rate (differentials telescope to the top rank); shown at 1,000,000 staked with Rank-5 (25%) tops and full differential (no breakaway) — a mid ceiling. Passive = 0.33%/day × 360 days = 118.8% per Starter stake. Referral 10% is self-funded by the buffer's referral reserve. Trading ROI needed = annual override ÷ 400,000 trading fund.</p>
+    <p>Real override sits below these ceilings once downlines rank up (breakaway shrinks every differential). Claims pay only what the buffer / vault surplus can currently back, so a shortfall <b>defers</b> payouts rather than bricking staking — but deferred payouts are still owed. The multiplier is live-tunable (<code>setOverrideMultiplier</code>); the day clock is fixed at deploy.</p>
+  </footer>
+</div>
+</body>
+</html>

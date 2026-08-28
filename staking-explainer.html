@@ -1,0 +1,617 @@
+<meta charset="utf-8">
+<title>ORBIX Staking — Contract Explainer</title>
+<style>
+  :root{
+    --bg:#0e1521; --bg-2:#0a0f18; --surface:#16202f; --surface-2:#1d2a3d;
+    --border:#284058; --border-soft:#1e2c3f;
+    --text:#e7edf4; --muted:#8fa0b6; --faint:#647896;
+    --accent:#c8fa46; --accent-fill:#c8fa46; --on-accent:#0e1521; --accent-dim:#9bc72f;
+    --amber:#e7a94e; --sky:#5ec8e2; --rose:#e77c86;
+    --ring:#22344a;
+    --shadow:0 1px 0 rgba(255,255,255,.03), 0 18px 40px -24px rgba(0,0,0,.7);
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --maxw:1080px;
+  }
+  @media (prefers-color-scheme: light){
+    :root{
+      --bg:#eef2f7; --bg-2:#e4eaf2; --surface:#ffffff; --surface-2:#f4f8fc;
+      --border:#d3dde9; --border-soft:#e3eaf3; --text:#132133; --muted:#4d5f75; --faint:#7688a0;
+      --accent:#4c7a06; --accent-fill:#bef23a; --on-accent:#13202f; --accent-dim:#5f8f0a;
+      --amber:#a96a12; --sky:#1683a1; --rose:#c0434f; --ring:#cdd8e6;
+      --shadow:0 1px 0 rgba(255,255,255,.6), 0 18px 40px -26px rgba(30,50,80,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0e1521; --bg-2:#0a0f18; --surface:#16202f; --surface-2:#1d2a3d;
+    --border:#284058; --border-soft:#1e2c3f; --text:#e7edf4; --muted:#8fa0b6; --faint:#647896;
+    --accent:#c8fa46; --accent-fill:#c8fa46; --on-accent:#0e1521; --accent-dim:#9bc72f;
+    --amber:#e7a94e; --sky:#5ec8e2; --rose:#e77c86; --ring:#22344a;
+    --shadow:0 1px 0 rgba(255,255,255,.03), 0 18px 40px -24px rgba(0,0,0,.7);
+  }
+  :root[data-theme="light"]{
+    --bg:#eef2f7; --bg-2:#e4eaf2; --surface:#ffffff; --surface-2:#f4f8fc;
+    --border:#d3dde9; --border-soft:#e3eaf3; --text:#132133; --muted:#4d5f75; --faint:#7688a0;
+    --accent:#4c7a06; --accent-fill:#bef23a; --on-accent:#13202f; --accent-dim:#5f8f0a;
+    --amber:#a96a12; --sky:#1683a1; --rose:#c0434f; --ring:#cdd8e6;
+    --shadow:0 1px 0 rgba(255,255,255,.6), 0 18px 40px -26px rgba(30,50,80,.35);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:
+      radial-gradient(1100px 560px at 82% -12%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 60%),
+      var(--bg);
+    color:var(--text);font-family:var(--sans);line-height:1.6;font-size:16px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  section{padding:46px 0;border-top:1px solid var(--border-soft)}
+  h1,h2,h3{font-weight:700;letter-spacing:-.02em;text-wrap:balance;margin:0}
+  p{margin:0;max-width:66ch;color:var(--muted)}
+  p strong,li strong{color:var(--text);font-weight:600}
+  code,.mono{font-family:var(--mono)}
+  .num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+  a{color:var(--accent)}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);display:flex;align-items:center;gap:9px}
+  .eyebrow::before{content:"";width:22px;height:1px;background:var(--accent);display:inline-block;opacity:.8}
+  .sec-head{display:flex;flex-direction:column;gap:10px;margin-bottom:26px}
+  .sec-head h2{font-size:clamp(24px,3.4vw,32px)}
+  .sec-head p{font-size:16px}
+  .sym{font-family:var(--mono);font-size:.86em;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:1px 6px;color:var(--text);white-space:nowrap}
+
+  header.hero{padding:60px 0 40px}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:38px;align-items:center}
+  @media(max-width:840px){.hero-grid{grid-template-columns:1fr;gap:28px}}
+  .brand{display:flex;align-items:center;gap:11px;margin-bottom:24px}
+  .brand .dot{width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent)}
+  .brand b{font-family:var(--mono);letter-spacing:.34em;font-size:13px;text-transform:uppercase}
+  .brand .sub{font-family:var(--mono);font-size:11px;color:var(--faint);letter-spacing:.1em;border-left:1px solid var(--border);padding-left:11px}
+  .hero h1{font-size:clamp(31px,5vw,50px);line-height:1.05}
+  .hero h1 em{font-style:normal;color:var(--accent)}
+  .hero .lede{margin-top:18px;font-size:18px;max-width:54ch}
+  .statrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+  .stat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 15px;min-width:112px}
+  .stat .k{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+  .stat .v{font-size:21px;font-weight:700;margin-top:3px;font-variant-numeric:tabular-nums}
+  .stat .v small{font-size:12px;color:var(--muted);font-weight:600}
+  .src{margin-top:18px;font-family:var(--mono);font-size:12.5px;color:var(--faint);display:flex;gap:8px;flex-wrap:wrap}
+  .src b{color:var(--muted);font-weight:600}
+  .chartcard{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px 18px 12px;box-shadow:var(--shadow)}
+  .chartcard .ct{font-family:var(--mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);margin-bottom:8px}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:8px;font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+  .legend i{display:inline-block;width:11px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle}
+  canvas{display:block;width:100%}
+  #heroChart{height:230px}
+  #tlChart{height:220px}
+
+  .cards{display:grid;gap:16px}
+  .g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}
+  @media(max-width:760px){.g2,.g3{grid-template-columns:1fr}}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;box-shadow:var(--shadow)}
+  .card h3{font-size:16px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+  .card p{font-size:14.5px}
+  .card .ic{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;flex:none;background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent);font-family:var(--mono);font-size:13px;font-weight:700}
+  ul.tick{list-style:none;padding:0;margin:10px 0 0;display:flex;flex-direction:column;gap:9px}
+  ul.tick li{position:relative;padding-left:22px;font-size:14.5px;color:var(--muted)}
+  ul.tick li::before{content:"›";position:absolute;left:4px;top:-1px;color:var(--accent);font-weight:700}
+
+  /* tier cards */
+  .tier{position:relative;overflow:hidden}
+  .tier .tag{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+  .tier .rate{font-size:38px;font-weight:700;letter-spacing:-.03em;margin:2px 0 0;font-variant-numeric:tabular-nums;color:var(--accent)}
+  .tier .rate small{font-size:14px;color:var(--muted);font-weight:600;letter-spacing:0}
+  .tier .meta{display:flex;gap:18px;margin:14px 0;flex-wrap:wrap}
+  .tier .meta div{font-size:13px;color:var(--muted)}
+  .tier .meta b{display:block;color:var(--text);font-size:16px;font-variant-numeric:tabular-nums}
+  .tier .amts{font-family:var(--mono);font-size:12.5px;color:var(--muted);border-top:1px solid var(--border-soft);padding-top:12px}
+  .tier.growth .rate,.tier.growth .ic{color:var(--sky)}
+  .tier.inst .rate,.tier.inst .ic{color:var(--amber)}
+
+  .tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:12px;background:var(--surface)}
+  table{border-collapse:collapse;width:100%;font-size:14px}
+  th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--border-soft);white-space:nowrap}
+  th{font-family:var(--mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);background:var(--surface-2);position:sticky;top:0}
+  td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr.tot td{font-weight:700;background:var(--surface-2);border-top:1px solid var(--border)}
+  .mut{color:var(--muted)}
+
+  .calc{background:linear-gradient(180deg,var(--surface),color-mix(in srgb,var(--surface) 88%,var(--bg-2)));border:1px solid var(--border);border-radius:16px;padding:22px;box-shadow:var(--shadow)}
+  .calc .bar{display:flex;align-items:center;gap:8px;margin-bottom:18px}
+  .calc .bar .led{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent)}
+  .calc .bar b{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .ctrls{display:flex;flex-wrap:wrap;gap:16px 22px;align-items:flex-end}
+  .field{display:flex;flex-direction:column;gap:7px}
+  .field label{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+  .seg-btns{display:flex;background:var(--surface-2);border:1px solid var(--border);border-radius:9px;padding:3px;gap:2px}
+  .seg-btns button{appearance:none;border:0;background:transparent;color:var(--muted);font-family:var(--sans);font-size:13px;padding:7px 13px;border-radius:6px;cursor:pointer}
+  .seg-btns button[aria-pressed="true"]{background:var(--accent-fill);color:var(--on-accent);font-weight:700}
+  input[type=number]{width:150px;background:var(--surface-2);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:var(--mono);font-size:15px;padding:9px 11px}
+  .chip{font-family:var(--mono);font-size:12px;color:var(--muted);background:var(--surface-2);border:1px solid var(--border);border-radius:7px;padding:6px 9px;cursor:pointer}
+  .chip:hover{border-color:var(--accent)}
+  .readout{display:flex;flex-wrap:wrap;gap:12px;margin:20px 0}
+  .ro{flex:1;min-width:140px;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+  .ro .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+  .ro .v{font-size:24px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+  .ro.good .v{color:var(--accent)}.ro.sky .v{color:var(--sky)}.ro.amber .v{color:var(--amber)}
+  .note{font-size:12.5px;color:var(--faint);margin-top:6px;font-style:italic;max-width:74ch}
+  button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+  .pill{font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:999px;font-weight:700}
+  .pill.on{background:color-mix(in srgb,var(--accent) 20%,transparent);color:var(--accent)}
+  .pill.off{background:color-mix(in srgb,var(--amber) 18%,transparent);color:var(--amber)}
+  .pill.sky{background:color-mix(in srgb,var(--sky) 20%,transparent);color:var(--sky)}
+
+  .flow{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+  .flow .node{flex:1;min-width:150px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px}
+  .flow .node .t{font-weight:700;font-size:14px;display:flex;align-items:center;gap:7px}
+  .flow .node .d{font-size:13px;color:var(--muted);margin-top:5px}
+  .flow .arr{align-self:center;color:var(--accent);font-family:var(--mono);font-size:20px;flex:none}
+  @media(max-width:760px){.flow .arr{transform:rotate(90deg)}}
+
+  .split{display:flex;height:34px;border-radius:9px;overflow:hidden;border:1px solid var(--border);margin-top:4px}
+  .split div{display:grid;place-items:center;font-family:var(--mono);font-size:11.5px;font-weight:700;color:var(--on-accent)}
+
+  .map td:first-child{color:var(--text);font-weight:600}
+  .map td .sym{white-space:normal}
+  footer{padding:34px 0 60px;color:var(--faint);font-size:13px;border-top:1px solid var(--border-soft)}
+  .xref{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:12px;color:var(--muted);text-decoration:none;border:1px solid var(--border);border-radius:8px;padding:5px 10px;margin-top:6px;margin-right:8px}
+  .toggle{position:fixed;top:14px;right:14px;z-index:10;background:var(--surface);border:1px solid var(--border);color:var(--muted);font-family:var(--mono);font-size:12px;padding:7px 11px;border-radius:9px;cursor:pointer}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<button class="toggle" id="themeBtn" aria-label="Toggle light or dark theme">◐ theme</button>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="brand"><span class="dot"></span><b>Orbix</b><span class="sub">Staking Program</span></div>
+    <div class="hero-grid">
+      <div>
+        <h1>Stake USDT. Earn <em>daily USDT</em>. Keep your ORBIX.</h1>
+        <p class="lede">A number-accurate walkthrough of <code>OrbixStaking</code>. Deposit USDT and the contract locks you a <strong>fixed ORBIX principal</strong> from its reserve — you never have to buy ORBIX. Through the lock you earn a <strong>passive USDT yield</strong> you can claim any day; after the lock your ORBIX principal returns to you at 2.5% every 30 days. Every figure is read straight from the source.</p>
+        <div class="statrow">
+          <div class="stat"><div class="k">Tiers</div><div class="v">3</div></div>
+          <div class="stat"><div class="k">Passive USDT</div><div class="v">10–15<small>% / mo</small></div></div>
+          <div class="stat"><div class="k">Lock</div><div class="v">8–12<small> mo</small></div></div>
+          <div class="stat"><div class="k">Principal back</div><div class="v">2.5<small>% / 30d</small></div></div>
+        </div>
+        <div class="src"><span><b>source:</b> projects/orbix/contracts/staking.sol</span></div>
+      </div>
+      <div>
+        <div class="chartcard">
+          <div class="ct">Passive USDT yield over the lock (% of USDT staked)</div>
+          <canvas id="heroChart" height="230" aria-label="Cumulative passive USDT yield curves for the three tiers"></canvas>
+          <div class="legend">
+            <span><i style="background:var(--accent)"></i>Starter · 118.8%</span>
+            <span><i style="background:var(--sky)"></i>Growth · 120%</span>
+            <span><i style="background:var(--amber)"></i>Institutional · 120%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- TWO STREAMS -->
+<section id="streams">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">00 · What you get</div>
+      <h2>Two return streams from one stake</h2>
+      <p>A stake splits your return into two independent flows. The <strong>yield</strong> is paid in USDT while your money is locked; the <strong>principal</strong> is the ORBIX you were given, returned in full after the lock. They never mix.</p>
+    </div>
+    <div class="cards g2">
+      <div class="card">
+        <h3><span class="ic">$</span>Passive USDT yield — during the lock</h3>
+        <p>Your staked USDT value earns a fixed daily rate (your tier's <span class="sym">dailyBps</span>) from day one to the unlock date. Claim it into your wallet any day with <span class="sym">claimPassive</span> — this is your real income.</p>
+        <ul class="tick">
+          <li><strong>~10–15% per month</strong> in USDT, by tier.</li>
+          <li>Accrues every day, <strong>freezes at unlock</strong>.</li>
+          <li>Claimable anytime the vault holds USDT surplus to cover it.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3><span class="ic" style="background:color-mix(in srgb,var(--sky) 16%,transparent);color:var(--sky)">◇</span>ORBIX principal — after the lock</h3>
+        <p>The fixed ORBIX the contract locked for you is returned at <strong>2.5% every 30 days</strong> over 40 months, starting 30 days after unlock. It never grows and never shrinks — it's your principal coming home.</p>
+        <ul class="tick">
+          <li>A <strong>fixed ORBIX amount</strong>, priced when you stake.</li>
+          <li>Reserved in full up-front — always backed.</li>
+          <li>Withdrawn with <span class="sym">claim</span>, 2.5% at a time.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TIERS -->
+<section id="tiers">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">01 · The tiers</div>
+      <h2>Three lock lengths, three daily yields</h2>
+      <p>Each tier fixes a <strong>daily USDT yield</strong> (in bps of the USDT you staked) and a <strong>lock length</strong>, seeded in the contract's constructor. Longer locks pay a lower daily rate; every tier returns roughly <strong>119–120%</strong> in USDT yield across its full lock. The rate is <strong>snapshotted onto your position</strong> — a later tier change never touches stakes already open.</p>
+    </div>
+    <div class="cards g3">
+      <div class="card tier starter">
+        <div class="tag">Tier 0 · Starter</div>
+        <div class="rate">0.33<small>% / day</small></div>
+        <div class="meta">
+          <div>Monthly<b>~9.9%</b></div><div>Lock<b>12 months</b></div><div>Yield over lock<b>118.8%</b></div>
+        </div>
+        <div class="amts">$25 · $50 · $100 · $250</div>
+      </div>
+      <div class="card tier growth">
+        <div class="tag">Tier 1 · Growth</div>
+        <div class="rate">0.40<small>% / day</small></div>
+        <div class="meta">
+          <div>Monthly<b>~12%</b></div><div>Lock<b>10 months</b></div><div>Yield over lock<b>120%</b></div>
+        </div>
+        <div class="amts">$500 · $1,000 · $2,500</div>
+      </div>
+      <div class="card tier inst">
+        <div class="tag">Tier 2 · Institutional</div>
+        <div class="rate">0.50<small>% / day</small></div>
+        <div class="meta">
+          <div>Monthly<b>~15%</b></div><div>Lock<b>8 months</b></div><div>Yield over lock<b>120%</b></div>
+        </div>
+        <div class="amts">$5K · $10K · $25K · $50K · $100K</div>
+      </div>
+    </div>
+    <p class="note" style="margin-top:14px">Daily bps are capped by <span class="sym">MAX_DAILY_BPS = 100</span> (1%/day) — an admin can never configure a runaway rate. Stake amounts are indicative; the contract enforces no per-tier minimum (only an optional global ORBIX floor).</p>
+  </div>
+</section>
+
+<!-- CALCULATOR -->
+<section id="calculator">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">02 · Yield &amp; principal calculator</div>
+      <h2>See a full stake, day one to fully returned</h2>
+      <p>Pick a tier and a stake value. The math is the contract's exactly: your USDT value earns <span class="sym">usdtPrincipal × dailyBps / 10000</span> in USDT per day through the lock; separately, your fixed ORBIX principal returns at <span class="sym">2.5% / 30 days</span> once the lock ends.</p>
+    </div>
+    <div class="calc">
+      <div class="bar"><span class="led"></span><b>Stake calculator</b></div>
+      <div class="ctrls">
+        <div class="field">
+          <label>Tier</label>
+          <div class="seg-btns" id="tierBtns" role="group" aria-label="Tier">
+            <button data-t="0" aria-pressed="true">Starter</button>
+            <button data-t="1">Growth</button>
+            <button data-t="2">Institutional</button>
+          </div>
+        </div>
+        <div class="field">
+          <label for="amtIn">Stake value (USDT)</label>
+          <input type="number" id="amtIn" value="100" min="1" step="1" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label>Quick amounts</label>
+          <div id="chips" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="ro good"><div class="k">Daily USDT yield</div><div class="v num" id="roDaily">—</div></div>
+        <div class="ro good"><div class="k">Monthly USDT yield</div><div class="v num" id="roMonthly">—</div></div>
+        <div class="ro sky"><div class="k">Total USDT yield (lock)</div><div class="v num" id="roTotal">—</div></div>
+        <div class="ro amber"><div class="k">ORBIX principal returned</div><div class="v num" id="roAll">—</div></div>
+      </div>
+      <div class="chartcard" style="border-radius:12px;background:var(--surface-2)">
+        <div class="ct" id="tlTitle">Timeline — USDT yield through the lock, then principal returned</div>
+        <canvas id="tlChart" height="220" aria-label="Stake timeline: passive USDT yield accrues during the lock, then the ORBIX principal returns in monthly slices"></canvas>
+        <div class="legend">
+          <span><i style="background:var(--accent)"></i>Passive USDT accrued</span>
+          <span><i style="background:var(--sky)"></i>ORBIX principal returned (2.5%/30d)</span>
+          <span><i style="background:var(--amber);height:8px;width:2px"></i>Unlock</span>
+        </div>
+      </div>
+      <p class="note">The passive USDT accrues in your position from day one and freezes at unlock — claim it any day with <strong>claimPassive</strong> (paid up to the vault's USDT surplus). Separately, the fixed ORBIX principal is reserved for you up-front and returns in 40 monthly slices of 2.5%, the first 30 days after unlock. "Stake value" is illustrative — both streams scale with whatever you stake.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT ACCRUES -->
+<section id="mechanics">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">03 · How it accrues</div>
+      <h2>Yield during the lock, principal after it</h2>
+    </div>
+    <div class="cards g2">
+      <div class="card">
+        <h3><span class="ic">$</span>Passive USDT — during the lock</h3>
+        <ul class="tick">
+          <li>Accrues at your tier's daily rate on the USDT you staked: <span class="sym">usdtPrincipal × dailyBps × days / BPS</span>.</li>
+          <li>Runs from your stake date and <strong>freezes at unlock</strong> — the lock is the earning window.</li>
+          <li>The rate is <strong>snapshotted</strong> at stake time (<span class="sym">position.dailyBps</span>), immune to later tier edits.</li>
+          <li>Claim any day via <span class="sym">claimPassive(index)</span>; each claim pays up to the vault's <strong>USDT surplus</strong>, and any remainder stays claimable after a top-up.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3><span class="ic" style="background:color-mix(in srgb,var(--sky) 16%,transparent);color:var(--sky)">◇</span>ORBIX principal — after the lock</h3>
+        <ul class="tick">
+          <li>Your fixed ORBIX principal returns at <strong>2.5% every 30 days</strong> (<span class="sym">vestingBps = 250</span>), snapshotted per position.</li>
+          <li>The schedule runs from the unlock date — the <strong>first 2.5% lands 30 days after unlock</strong>, then every 30 days.</li>
+          <li>Full principal returns over <strong>40 months</strong> (100% ÷ 2.5%); claim each slice via <span class="sym">claim(index)</span>.</li>
+          <li>It never grows and never shrinks — this is a <strong>withdrawal of your own ORBIX</strong>, metered out, not a reward.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FUND THREE WAYS -->
+<section id="funding">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">04 · Funding a stake</div>
+      <h2>You bring USDT — the contract brings the ORBIX</h2>
+      <p>You never have to go buy ORBIX first. The staking contract holds a project-funded <strong>ORBIX reserve</strong> that supplies your fixed principal, reserved up-front when you stake. Several ways in — all end in the same locked position.</p>
+    </div>
+    <div class="cards g3" style="margin-bottom:18px">
+      <div class="card">
+        <h3><span class="ic">A</span>Pay with USDT</h3>
+        <p><span class="sym">stake(tier, usdt)</span> — the reserve hands you ORBIX at the LP's TWAP price; your USDT is routed to the leadership pool, liquidity, and profit (the split below). This is the earning path — it sets your <strong>passive USDT basis</strong> and pays your uplines.</p>
+      </div>
+      <div class="card">
+        <h3><span class="ic" style="background:color-mix(in srgb,var(--sky) 16%,transparent);color:var(--sky)">B</span>Stake ORBIX you hold</h3>
+        <p><span class="sym">stakeWithOrbix(tier, amount)</span> — lock ORBIX already in your vault balance as principal. Principal-only: pays no upline rewards. <span class="sym">stakeWithOrbixRewards</span> adds company-funded leadership rewards.</p>
+      </div>
+      <div class="card">
+        <h3><span class="ic" style="background:color-mix(in srgb,var(--amber) 16%,transparent);color:var(--amber)">C</span>Auth &amp; promo grants</h3>
+        <p><span class="sym">stakeByAuth*</span> — an admin can open a stake for a member (charged or free-from-reserve), with or without leadership rewards. The company-promotion path.</p>
+      </div>
+    </div>
+    <div class="cards g2" style="align-items:start">
+      <div class="card">
+        <h3>Where a USDT stake's money goes</h3>
+        <p style="margin-bottom:10px">A USDT stake's own USDT is split across the ecosystem (deployed config; retunable within caps):</p>
+        <div class="split" id="splitBar"></div>
+        <div class="legend" style="margin-top:10px">
+          <span><i style="background:var(--accent)"></i>Leadership pool 50%</span>
+          <span><i style="background:var(--sky)"></i>Liquidity 30%</span>
+          <span><i style="background:var(--rose)"></i>Referral 10%</span>
+          <span><i style="background:var(--amber)"></i>Profit 10%</span>
+        </div>
+        <p class="note" style="margin-top:10px">The leadership + referral slices fund the override + referral payouts (see the companion pages). The split is enforced to total ≤ 100% by <span class="sym">setStakeConfig</span> + <span class="sym">setReferralPlan</span>.</p>
+      </div>
+      <div class="card">
+        <h3>Reserve first, swap only if short</h3>
+        <div class="flow">
+          <div class="node"><div class="t"><span class="ic">1</span>Price</div><div class="d">USDT → ORBIX at the pool's 10-min TWAP via <span class="sym">convertToken</span> (or the <span class="sym">productRate</span> fallback pre-LP).</div></div>
+          <div class="arr">→</div>
+          <div class="node"><div class="t"><span class="ic">2</span>Reserve</div><div class="d">The reserve covers the fixed ORBIX principal from its <strong>surplus</strong> — moved into staking's own tracked account.</div></div>
+          <div class="arr">→</div>
+          <div class="node"><div class="t"><span class="ic">3</span>Lock</div><div class="d">The position opens; your passive USDT basis + your ORBIX principal are both set.</div></div>
+        </div>
+        <ul class="tick" style="margin-top:12px">
+          <li>USDT-funded staking runs even <strong>before the LP is live</strong> (productRate fallback).</li>
+          <li>If the reserve can't cover the principal, the stake <strong>reverts cleanly</strong> — funds untouched.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SAFETY -->
+<section id="safety">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">05 · Built to be safe</div>
+      <h2>Where your value lives — and what can't touch it</h2>
+      <p>The staking contract was audited and hardened this build. The properties below are the ones that protect a staker's funds.</p>
+    </div>
+    <div class="cards g3">
+      <div class="card"><h3><span class="ic">🔒</span>Reserved principal</h3><p>Your fixed ORBIX principal is moved to the contract's own vault account and stays <strong>tracked</strong> — admin surplus-sweeps can never spend it. Every scheduled return always has it to give back.</p></div>
+      <div class="card"><h3><span class="ic">⛓</span>Immutable wiring</h3><p>The <span class="sym">accounts</span> and <span class="sym">assets</span> contracts are fixed at deploy — no admin can re-point staking at a malicious registry or vault.</p></div>
+      <div class="card"><h3><span class="ic">📸</span>Snapshotted terms</h3><p>Your daily yield rate and 2.5% return rate are frozen onto the position when you stake, so a later parameter change can't rewrite a live obligation.</p></div>
+    </div>
+    <div class="cards g2" style="margin-top:16px">
+      <div class="card"><h3><span class="ic">$</span>Passive is surplus-gated</h3><p>Each <span class="sym">claimPassive</span> pays only up to the vault's live <strong>USDT surplus</strong> — it can never spend USDT that backs other obligations. Any unpaid remainder stays claimable once the surplus is topped up, so a claim is always solvent.</p></div>
+      <div class="card"><h3><span class="ic">⏸</span>Pause &amp; funding gates</h3><p>Staking, claims, and returns can be paused in an emergency. USDT-funded stakes need enough reserve; if it can't fill, the stake reverts cleanly rather than half-completing.</p></div>
+    </div>
+    <div class="card" style="margin-top:16px"><h3><span class="ic" style="background:color-mix(in srgb,var(--sky) 16%,transparent);color:var(--sky)">⚖</span>The group-sales withdrawal gate</h3><p>If you took a USDT credit line to stake, your <strong>principal returns are held</strong> until your downline group sales reach <span class="sym">creditUsed × 5</span> (checked against the leadership module) — or you repay the debt. Held ORBIX is still reserved for you the whole time; <span class="sym">releaseHeld</span> frees it once you qualify. Cash stakers are never gated.</p></div>
+  </div>
+</section>
+
+<!-- CONTRACT MAP -->
+<section id="verify">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">06 · Parity check</div>
+      <h2>Every claim, mapped to the contract</h2>
+      <p>Verify this page against <code>staking.sol</code>. Each rule resolves to a concrete constant, function, or branch.</p>
+    </div>
+    <div class="tbl-wrap map">
+      <table id="mapTbl"><thead><tr><th>Rule in plain language</th><th>Where it lives in the contract</th><th class="n">Value</th></tr></thead><tbody></tbody></table>
+    </div>
+    <p class="note" style="margin-top:14px">Constants shown are the contract defaults; <span class="sym">setTier</span> / <span class="sym">setVesting</span> / <span class="sym">setStakeConfig</span> can retune them within the coded caps.</p>
+    <div>
+      <a class="xref" href="./referral-explainer.html" id="refLink">↔ Referral program explainer</a>
+      <a class="xref" href="./override-explainer.html" id="ovLink">↔ Leadership override explainer</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">ORBIX Staking — contract explainer · generated from <code>projects/orbix/contracts/staking.sol</code> &amp; <code>STAKING.md</code>. Figures are contract defaults. Not financial advice.</div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var BPS=10000, VEST_BPS=250, MONTH=30;
+  var tiers=[
+    {name:"Starter",       dailyBps:33, lockMonths:12, lockDays:360, amounts:[25,50,100,250], color:"var(--accent)"},
+    {name:"Growth",        dailyBps:40, lockMonths:10, lockDays:300, amounts:[500,1000,2500], color:"var(--sky)"},
+    {name:"Institutional", dailyBps:50, lockMonths:8,  lockDays:240, amounts:[5000,10000,25000,50000,100000], color:"var(--amber)"}
+  ];
+  var $=function(s,r){return (r||document).querySelector(s);};
+  var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));};
+  var fmtUSD=function(n){var d=n<100?2:0; return "$"+ (Math.round(n*100)/100).toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d});};
+  var pct=function(n){return (Math.round(n*100)/100)+"%";};
+  function cssvar(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+
+  /* theme */
+  $("#themeBtn").addEventListener("click",function(){
+    var cur=document.documentElement.getAttribute("data-theme");
+    if(!cur){cur=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}
+    document.documentElement.setAttribute("data-theme",cur==="dark"?"light":"dark");
+    drawHero(); drawTimeline();
+  });
+
+  /* split bar */
+  (function(){
+    var bar=$("#splitBar"); if(!bar) return;
+    [["50%","var(--accent)","var(--on-accent)"],["30%","var(--sky)","var(--on-accent)"],["10%","var(--rose)","#fff"],["10%","var(--amber)","var(--on-accent)"]]
+      .forEach(function(s){var d=document.createElement("div");d.style.flex=parseInt(s[0],10);d.style.background=s[1];d.style.color=s[2];d.textContent=s[0];bar.appendChild(d);});
+  })();
+
+  /* ---------- calculator ---------- */
+  var curTier=0, amt=100;
+  function renderChips(){
+    var box=$("#chips"); box.innerHTML="";
+    tiers[curTier].amounts.forEach(function(a){
+      var b=document.createElement("button"); b.className="chip"; b.type="button";
+      b.textContent="$"+a.toLocaleString("en-US");
+      b.addEventListener("click",function(){ amt=a; $("#amtIn").value=a; calc(); });
+      box.appendChild(b);
+    });
+  }
+  function calc(){
+    var t=tiers[curTier];
+    var daily=amt*t.dailyBps/BPS;
+    var monthly=daily*MONTH;
+    var total=daily*t.lockDays;
+    $("#roDaily").textContent=fmtUSD(daily);
+    $("#roMonthly").textContent=fmtUSD(monthly)+"  ("+pct(t.dailyBps/BPS*MONTH*100)+")";
+    $("#roTotal").textContent=fmtUSD(total)+"  ("+pct(t.dailyBps/BPS*t.lockDays*100)+")";
+    $("#roAll").textContent=fmtUSD(amt)+"  (100%)";
+    $("#tlTitle").textContent="Timeline — "+t.name+" · "+t.lockMonths+"-month lock earning USDT, then 40 returns of 2.5%/30d";
+    drawTimeline();
+  }
+  $$("#tierBtns button").forEach(function(b){
+    b.addEventListener("click",function(){
+      $$("#tierBtns button").forEach(function(x){x.setAttribute("aria-pressed","false");});
+      b.setAttribute("aria-pressed","true");
+      curTier=parseInt(b.getAttribute("data-t"),10);
+      renderChips(); calc();
+    });
+  });
+  $("#amtIn").addEventListener("input",function(){ var v=parseFloat(this.value); amt=v>0?v:0; calc(); });
+
+  /* ---------- hero chart: 3 cumulative yield curves ---------- */
+  function setup(cv){
+    // Use the CSS-driven display size (stable) for both buffer + logical dims. Reading the height ATTRIBUTE
+    // here is unsafe: setting cv.height reflects back to the attribute, so re-reading it compounds by dpr each
+    // frame. rect.height comes from the fixed CSS height, so it never drifts.
+    var dpr=Math.min(devicePixelRatio||1,2), r=cv.getBoundingClientRect();
+    var H=Math.round(r.height)||parseInt(cv.getAttribute("height"),10);
+    cv.width=Math.round(r.width*dpr); cv.height=Math.round(H*dpr);
+    var ctx=cv.getContext("2d"); ctx.setTransform(dpr,0,0,dpr,0,0);
+    return {ctx:ctx,w:r.width,h:H};
+  }
+  function drawHero(prog){
+    var cv=$("#heroChart"); if(!cv) return; var s=setup(cv), ctx=s.ctx, W=s.w, H=s.h;
+    var padL=34, padR=10, padT=12, padB=26; var gw=W-padL-padR, gh=H-padT-padB;
+    var maxDays=360, maxPct=130;
+    ctx.clearRect(0,0,W,H);
+    var grid=cssvar("--border-soft")||"#1e2c3f", faint=cssvar("--faint")||"#647896";
+    ctx.strokeStyle=grid; ctx.lineWidth=1; ctx.font="10px "+(cssvar("--mono")||"monospace"); ctx.fillStyle=faint;
+    [0,25,50,75,100,125].forEach(function(p){
+      var y=padT+gh-(p/maxPct)*gh;
+      ctx.globalAlpha=.6; ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(W-padR,y); ctx.stroke(); ctx.globalAlpha=1;
+      ctx.textAlign="right"; ctx.fillText(p+"%", padL-6, y+3);
+    });
+    ctx.textAlign="center";
+    [0,90,180,270,360].forEach(function(d){ var x=padL+(d/maxDays)*gw; ctx.fillText(d+"d", x, H-8); });
+    var colors=[cssvar("--accent"),cssvar("--sky"),cssvar("--amber")];
+    tiers.forEach(function(t,i){
+      var endDay=t.lockDays*(prog==null?1:prog);
+      ctx.beginPath();
+      ctx.moveTo(padL,padT+gh);
+      var x1=padL+(endDay/maxDays)*gw;
+      var endPct=(t.dailyBps/BPS)*endDay*100;
+      var y1=padT+gh-(endPct/maxPct)*gh;
+      ctx.lineTo(x1,y1);
+      ctx.strokeStyle=colors[i]; ctx.lineWidth=2.4; ctx.lineCap="round"; ctx.stroke();
+      if(prog==null||prog>=1){ ctx.beginPath(); ctx.arc(x1,y1,3.4,0,Math.PI*2); ctx.fillStyle=colors[i]; ctx.fill(); }
+    });
+  }
+
+  /* ---------- timeline chart: passive USDT accrual + principal return ---------- */
+  function drawTimeline(prog){
+    var cv=$("#tlChart"); if(!cv) return; var s=setup(cv), ctx=s.ctx, W=s.w, H=s.h;
+    var t=tiers[curTier];
+    var padL=8, padR=8, padT=14, padB=26; var gw=W-padL-padR, gh=H-padT-padB;
+    var lockM=t.lockMonths, vestM=40, totalM=lockM+vestM;
+    var totalYield=amt*t.dailyBps/BPS*t.lockDays;         // total passive USDT over the lock
+    var principal=amt;                                    // ORBIX principal (in USDT terms) returned after
+    var maxY=Math.max(totalYield, principal);
+    ctx.clearRect(0,0,W,H);
+    var grid=cssvar("--border-soft")||"#1e2c3f", faint=cssvar("--faint")||"#647896",
+        acc=cssvar("--accent")||"#c8fa46", sky=cssvar("--sky")||"#5ec8e2", amber=cssvar("--amber")||"#e7a94e";
+    function X(m){return padL+(m/totalM)*gw;}
+    function Y(v){return padT+gh-(v/maxY)*gh;}
+    ctx.strokeStyle=grid; ctx.lineWidth=1; ctx.font="10px "+(cssvar("--mono")||"monospace"); ctx.fillStyle=faint; ctx.textAlign="center";
+    ctx.beginPath(); ctx.moveTo(padL,padT+gh); ctx.lineTo(W-padR,padT+gh); ctx.stroke();
+    for(var m=0;m<=totalM;m+=6){ var x=X(m); ctx.globalAlpha=.35; ctx.beginPath(); ctx.moveTo(x,padT); ctx.lineTo(x,padT+gh); ctx.stroke(); ctx.globalAlpha=1; ctx.fillText(m+"mo",x,H-8); }
+    var xu=X(lockM);
+    ctx.strokeStyle=amber; ctx.lineWidth=2; ctx.setLineDash([4,3]); ctx.beginPath(); ctx.moveTo(xu,padT); ctx.lineTo(xu,padT+gh); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle=amber; ctx.fillText("unlock", xu, padT+9);
+    var P=(prog==null?1:prog);
+    var lastM=totalM*P;
+    // passive USDT accrued: rises 0..totalYield over [0,lockM], flat after (frozen)
+    ctx.beginPath(); ctx.moveTo(X(0),Y(0));
+    for(var mm=0;mm<=lastM;mm+=0.5){
+      var yv = mm<=lockM ? (totalYield*(mm/lockM)) : totalYield;
+      ctx.lineTo(X(mm),Y(yv));
+    }
+    ctx.strokeStyle=acc; ctx.lineWidth=2.4; ctx.lineCap="round"; ctx.stroke();
+    ctx.lineTo(X(Math.min(lastM,totalM)),Y(0)); ctx.lineTo(X(0),Y(0)); ctx.closePath();
+    ctx.globalAlpha=.10; ctx.fillStyle=acc; ctx.fill(); ctx.globalAlpha=1;
+    // ORBIX principal returned: 0 until unlock, then 2.5%/30d up to principal
+    ctx.beginPath(); var started=false;
+    for(var m2=0;m2<=lastM;m2+=0.5){
+      var ret = m2<=lockM ? 0 : Math.min(principal, principal*(VEST_BPS/BPS)*(m2-lockM));
+      if(!started){ctx.moveTo(X(m2),Y(ret)); started=true;} else {ctx.lineTo(X(m2),Y(ret));}
+    }
+    ctx.strokeStyle=sky; ctx.lineWidth=2.4; ctx.stroke();
+  }
+
+  /* ---------- contract map ---------- */
+  (function(){
+    var rows=[
+      ["Three tiers seeded at deploy","constructor → tiers.push(Tier{dailyBps, lockDuration})","33 / 40 / 50 bps · 12 / 10 / 8 mo"],
+      ["Passive USDT yield formula","_accruedPassive → usdtPrincipal × dailyBps × days / BPS","accrues to lockEnd"],
+      ["Passive rate frozen per position","position.dailyBps snapshot at stake","immune to setTier"],
+      ["Passive freezes at unlock","_accruedPassive caps elapsed at lockEnd","earn window = lock"],
+      ["Claim passive anytime, surplus-gated","claimPassive → pay min(owed, assets.surplus(USDT))","reverts NO_SURPLUS"],
+      ["Max daily rate","MAX_DAILY_BPS","100 bps (1%/day)"],
+      ["ORBIX principal is fixed, never grows","_maturity(p) → p.principal","reserved at stake"],
+      ["Principal returns 2.5% / 30 days","vestingBps · claim(index)","250 bps, after lockEnd"],
+      ["First return 30 days after unlock, 40 total","_vested → M × vestingBps × monthsSinceUnlock / BPS","month 1 at lockEnd+30d"],
+      ["Full principal reserved, unsweepable","stake → assets.creditBalance(staking, ORBIX, P)","tracked, not surplus"],
+      ["Pay USDT, ORBIX from reserve","stake(tierId, usdt) → _stakeFromUsdt","reserve-first"],
+      ["USDT split: pool / LP / profit","_routeStakeUsdt","50 / 30 / 10 / 10"],
+      ["Stake your own ORBIX (no rewards)","stakeWithOrbix(tierId, amount)","principal-only"],
+      ["Company-funded upline rewards","stakeByAuthFreeRewards / stakeWithOrbixRewards","leadership.recordStake"],
+      ["USDT→ORBIX pricing","liquidity.convertToken(USDT, amount)","10-min TWAP / productRate"],
+      ["Withdrawal gate (if indebted)","_canWithdraw → qualifiesForWithdraw(user, debt×5)","group sales ≥ debt×5"],
+      ["Immutable accounts + assets","immutable; no setContracts","no re-point"],
+      ["Emergency pause","setPaused(bool)","stake/claim/release"]
+    ];
+    var tb=$("#mapTbl tbody");
+    rows.forEach(function(r){
+      var tr=document.createElement("tr");
+      tr.innerHTML='<td>'+r[0]+'</td><td><span class="sym">'+r[1]+'</span></td><td class="n"><span class="mono">'+r[2]+'</span></td>';
+      tb.appendChild(tr);
+    });
+  })();
+
+  window.addEventListener("resize",function(){drawHero(); drawTimeline();});
+  var reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  renderChips(); calc();
+  if(reduce){ drawHero(); drawTimeline(); }
+  else{
+    var t0=null;
+    function anim(ts){ if(t0==null)t0=ts; var p=Math.min(1,(ts-t0)/900); var e=1-Math.pow(1-p,3); drawHero(e); drawTimeline(e); if(p<1)requestAnimationFrame(anim); }
+    requestAnimationFrame(anim);
+  }
+})();
+</script>

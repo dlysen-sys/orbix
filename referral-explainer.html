@@ -1,0 +1,377 @@
+<meta charset="utf-8">
+<title>ORBIX Referral — Contract Explainer</title>
+<style>
+  :root{
+    --bg:#0e1521; --bg-2:#0a0f18; --surface:#16202f; --surface-2:#1d2a3d;
+    --border:#284058; --border-soft:#1e2c3f;
+    --text:#e7edf4; --muted:#8fa0b6; --faint:#647896;
+    --accent:#c8fa46; --accent-fill:#c8fa46; --on-accent:#0e1521; --accent-dim:#9bc72f;
+    --amber:#e7a94e; --sky:#5ec8e2; --rose:#e77c86;
+    --ring:#22344a;
+    --shadow:0 1px 0 rgba(255,255,255,.03), 0 18px 40px -24px rgba(0,0,0,.7);
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --maxw:1080px;
+  }
+  @media (prefers-color-scheme: light){
+    :root{
+      --bg:#eef2f7; --bg-2:#e4eaf2; --surface:#ffffff; --surface-2:#f4f8fc;
+      --border:#d3dde9; --border-soft:#e3eaf3; --text:#132133; --muted:#4d5f75; --faint:#7688a0;
+      --accent:#4c7a06; --accent-fill:#bef23a; --on-accent:#13202f; --accent-dim:#5f8f0a;
+      --amber:#a96a12; --sky:#1683a1; --rose:#c0434f; --ring:#cdd8e6;
+      --shadow:0 1px 0 rgba(255,255,255,.6), 0 18px 40px -26px rgba(30,50,80,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0e1521; --bg-2:#0a0f18; --surface:#16202f; --surface-2:#1d2a3d;
+    --border:#284058; --border-soft:#1e2c3f; --text:#e7edf4; --muted:#8fa0b6; --faint:#647896;
+    --accent:#c8fa46; --accent-fill:#c8fa46; --on-accent:#0e1521; --accent-dim:#9bc72f;
+    --amber:#e7a94e; --sky:#5ec8e2; --rose:#e77c86; --ring:#22344a;
+    --shadow:0 1px 0 rgba(255,255,255,.03), 0 18px 40px -24px rgba(0,0,0,.7);
+  }
+  :root[data-theme="light"]{
+    --bg:#eef2f7; --bg-2:#e4eaf2; --surface:#ffffff; --surface-2:#f4f8fc;
+    --border:#d3dde9; --border-soft:#e3eaf3; --text:#132133; --muted:#4d5f75; --faint:#7688a0;
+    --accent:#4c7a06; --accent-fill:#bef23a; --on-accent:#13202f; --accent-dim:#5f8f0a;
+    --amber:#a96a12; --sky:#1683a1; --rose:#c0434f; --ring:#cdd8e6;
+    --shadow:0 1px 0 rgba(255,255,255,.6), 0 18px 40px -26px rgba(30,50,80,.35);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:
+      radial-gradient(1100px 560px at 82% -12%, color-mix(in srgb, var(--rose) 8%, transparent), transparent 60%),
+      var(--bg);
+    color:var(--text);font-family:var(--sans);line-height:1.6;font-size:16px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  section{padding:46px 0;border-top:1px solid var(--border-soft)}
+  h1,h2,h3{font-weight:700;letter-spacing:-.02em;text-wrap:balance;margin:0}
+  p{margin:0;max-width:66ch;color:var(--muted)}
+  p strong,li strong{color:var(--text);font-weight:600}
+  code,.mono{font-family:var(--mono)}
+  .num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+  a{color:var(--accent)}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);display:flex;align-items:center;gap:9px}
+  .eyebrow::before{content:"";width:22px;height:1px;background:var(--accent);display:inline-block;opacity:.8}
+  .sec-head{display:flex;flex-direction:column;gap:10px;margin-bottom:26px}
+  .sec-head h2{font-size:clamp(24px,3.4vw,32px)}
+  .sec-head p{font-size:16px}
+  .sym{font-family:var(--mono);font-size:.86em;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:1px 6px;color:var(--text);white-space:nowrap}
+
+  header.hero{padding:60px 0 40px}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:38px;align-items:center}
+  @media(max-width:840px){.hero-grid{grid-template-columns:1fr;gap:28px}}
+  .brand{display:flex;align-items:center;gap:11px;margin-bottom:24px}
+  .brand .dot{width:12px;height:12px;border-radius:50%;background:var(--rose);box-shadow:0 0 0 4px color-mix(in srgb,var(--rose) 22%,transparent)}
+  .brand b{font-family:var(--mono);letter-spacing:.34em;font-size:13px;text-transform:uppercase}
+  .brand .sub{font-family:var(--mono);font-size:11px;color:var(--faint);letter-spacing:.1em;border-left:1px solid var(--border);padding-left:11px}
+  .hero h1{font-size:clamp(31px,5vw,50px);line-height:1.05}
+  .hero h1 em{font-style:normal;color:var(--accent)}
+  .hero .lede{margin-top:18px;font-size:18px;max-width:54ch}
+  .statrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+  .stat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 15px;min-width:112px}
+  .stat .k{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+  .stat .v{font-size:21px;font-weight:700;margin-top:3px;font-variant-numeric:tabular-nums}
+  .stat .v small{font-size:12px;color:var(--muted);font-weight:600}
+  .src{margin-top:18px;font-family:var(--mono);font-size:12.5px;color:var(--faint);display:flex;gap:8px;flex-wrap:wrap}
+  .src b{color:var(--muted);font-weight:600}
+
+  .cards{display:grid;gap:16px}
+  .g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}
+  @media(max-width:760px){.g2,.g3{grid-template-columns:1fr}}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;box-shadow:var(--shadow)}
+  .card h3{font-size:16px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+  .card p{font-size:14.5px}
+  .card .ic{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;flex:none;background:color-mix(in srgb,var(--rose) 18%,transparent);color:var(--rose);font-family:var(--mono);font-size:13px;font-weight:700}
+  ul.tick{list-style:none;padding:0;margin:10px 0 0;display:flex;flex-direction:column;gap:9px}
+  ul.tick li{position:relative;padding-left:22px;font-size:14.5px;color:var(--muted)}
+  ul.tick li::before{content:"›";position:absolute;left:4px;top:-1px;color:var(--accent);font-weight:700}
+
+  .tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:12px;background:var(--surface)}
+  table{border-collapse:collapse;width:100%;font-size:14px}
+  th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--border-soft);white-space:nowrap}
+  th{font-family:var(--mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);background:var(--surface-2);position:sticky;top:0}
+  td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr.tot td{font-weight:700;background:var(--surface-2);border-top:1px solid var(--border)}
+  .mut{color:var(--muted)}
+  .lvpill{font-family:var(--mono);font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;background:color-mix(in srgb,var(--rose) 16%,transparent);color:var(--rose)}
+  .lvpill.direct{background:color-mix(in srgb,var(--accent) 18%,transparent);color:var(--accent)}
+
+  .calc{background:linear-gradient(180deg,var(--surface),color-mix(in srgb,var(--surface) 88%,var(--bg-2)));border:1px solid var(--border);border-radius:16px;padding:22px;box-shadow:var(--shadow)}
+  .calc .bar{display:flex;align-items:center;gap:8px;margin-bottom:18px}
+  .calc .bar .led{width:8px;height:8px;border-radius:50%;background:var(--rose);box-shadow:0 0 8px var(--rose)}
+  .calc .bar b{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .ctrls{display:flex;flex-wrap:wrap;gap:16px 22px;align-items:flex-end}
+  .field{display:flex;flex-direction:column;gap:7px}
+  .field label{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+  input[type=number]{width:160px;background:var(--surface-2);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:var(--mono);font-size:15px;padding:9px 11px}
+  .chip{font-family:var(--mono);font-size:12px;color:var(--muted);background:var(--surface-2);border:1px solid var(--border);border-radius:7px;padding:6px 9px;cursor:pointer}
+  .chip:hover{border-color:var(--rose)}
+  .readout{display:flex;flex-wrap:wrap;gap:12px;margin:20px 0 6px}
+  .ro{flex:1;min-width:150px;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+  .ro .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+  .ro .v{font-size:24px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+  .ro.good .v{color:var(--accent)}.ro.rose .v{color:var(--rose)}
+  .note{font-size:12.5px;color:var(--faint);margin-top:6px;font-style:italic;max-width:74ch}
+  button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+
+  /* affiliate ladder */
+  .ladder{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+  .rung{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:11px 14px}
+  .rung .lv{font-family:var(--mono);font-size:11px;color:var(--faint);width:58px;flex:none}
+  .rung .who{font-weight:600;font-size:14px;flex:1}
+  .rung .who small{display:block;color:var(--muted);font-weight:400;font-size:12.5px}
+  .rung .bpsbar{flex:2;min-width:120px;height:12px;border-radius:7px;background:var(--surface-2);overflow:hidden;border:1px solid var(--border-soft)}
+  .rung .bpsbar i{display:block;height:100%;background:var(--rose)}
+  .rung.direct .bpsbar i{background:var(--accent)}
+  .rung .amt{font-family:var(--mono);font-size:13px;font-weight:700;width:74px;text-align:right;flex:none}
+  .rung.you{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,var(--surface))}
+  .rung.you .who{color:var(--accent)}
+
+  .flow{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+  .flow .node{flex:1;min-width:150px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px}
+  .flow .node .t{font-weight:700;font-size:14px;display:flex;align-items:center;gap:7px}
+  .flow .node .d{font-size:13px;color:var(--muted);margin-top:5px}
+  .flow .arr{align-self:center;color:var(--rose);font-family:var(--mono);font-size:20px;flex:none}
+  @media(max-width:760px){.flow .arr{transform:rotate(90deg)}}
+  .ic2{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;flex:none;background:color-mix(in srgb,var(--rose) 16%,transparent);color:var(--rose);font-family:var(--mono);font-size:13px;font-weight:700}
+
+  .map td:first-child{color:var(--text);font-weight:600}
+  .map td .sym{white-space:normal}
+  footer{padding:34px 0 60px;color:var(--faint);font-size:13px;border-top:1px solid var(--border-soft)}
+  .xref{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:12px;color:var(--muted);text-decoration:none;border:1px solid var(--border);border-radius:8px;padding:5px 10px;margin-top:6px;margin-right:8px}
+  .toggle{position:fixed;top:14px;right:14px;z-index:10;background:var(--surface);border:1px solid var(--border);color:var(--muted);font-family:var(--mono);font-size:12px;padding:7px 11px;border-radius:9px;cursor:pointer}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<button class="toggle" id="themeBtn" aria-label="Toggle light or dark theme">◐ theme</button>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="brand"><span class="dot"></span><b>Orbix</b><span class="sub">Referral Program</span></div>
+    <div class="hero-grid">
+      <div>
+        <h1>Sponsor once. Earn <em>six levels</em> deep.</h1>
+        <p class="lede">A number-accurate walkthrough of the ORBIX <strong>flat unilevel referral</strong>, built into <code>OrbixLeadership</code>. Every USDT stake in your sponsorship tree pays a fixed slice up to <strong>six generations</strong> of uplines — <strong>5% to the direct sponsor</strong>, then <strong>1% for five more levels</strong>. Paid in USDT, funded from the stake itself. Every figure is read straight from the source.</p>
+        <div class="statrow">
+          <div class="stat"><div class="k">Direct</div><div class="v">5<small>%</small></div></div>
+          <div class="stat"><div class="k">Indirect</div><div class="v">1<small>% × 5</small></div></div>
+          <div class="stat"><div class="k">Depth</div><div class="v">6<small> levels</small></div></div>
+          <div class="stat"><div class="k">Per stake</div><div class="v">10<small>% total</small></div></div>
+        </div>
+        <div class="src"><span><b>source:</b> projects/orbix/contracts/leadership.sol · _payReferral</span></div>
+      </div>
+      <div>
+        <div class="card" style="padding:18px">
+          <div style="font-family:var(--mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);margin-bottom:12px">A $1,000 stake, paid up the tree</div>
+          <div class="ladder" id="heroLadder"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- HOW IT PAYS -->
+<section id="how">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">01 · How it pays</div>
+      <h2>A flat rate on every stake beneath you</h2>
+      <p>Referral rides your <strong>affiliate (sponsorship) tree</strong> — the chain of who invited whom. When anyone in your downline opens a USDT stake, the contract walks up from them and pays each generation a fixed percentage of that stake, in USDT, straight into a claimable balance.</p>
+    </div>
+    <div class="cards g3">
+      <div class="card">
+        <h3><span class="ic">1</span>Direct sponsor — 5%</h3>
+        <p>The person who invited the staker (level 1) earns <strong><span class="sym">directBps</span> = 5%</strong> of the stake. The biggest single slice, for bringing them in.</p>
+      </div>
+      <div class="card">
+        <h3><span class="ic">5×</span>Indirect — 1% each</h3>
+        <p>The next five generations up (levels 2–6) each earn <strong><span class="sym">indirectBps</span> = 1%</strong> — <span class="sym">indirectLevels = 5</span>. Depth rewards the people who built the network above you.</p>
+      </div>
+      <div class="card">
+        <h3><span class="ic">Σ</span>10% reserved per stake</h3>
+        <p>Total = 5% + 1%×5 = <strong>10%</strong> (<span class="sym">referralReserveBps</span>). This exact slice is carved from the staker's own USDT — it is never a company subsidy.</p>
+      </div>
+    </div>
+    <div class="note" style="margin-top:14px;border-color:color-mix(in srgb, var(--amber, #b7791f) 45%, var(--line, #d9e2ec));background:color-mix(in srgb, var(--amber, #b7791f) 9%, var(--surface, #fff))"><strong>◆ Requirement — you must stay staked to receive.</strong> An upline whose own position is <strong>closed</strong> (no live stake, and not admin-assigned a rank) is <strong>skipped</strong> — the walk continues past them to the next eligible upline, so referral is never paid to a lapsed member. In the contract, <span class="sym">_payReferral</span> skips any upline where <span class="sym">activeStake == 0 &amp;&amp; rankFloor == 0</span>. The same safety net gates the override and the staking passive.</div>
+    <p class="note" style="margin-top:14px">Rates are configurable by the program (<span class="sym">setReferralPlan(direct, indirect, levels)</span>) within the split invariant; the figures here are the marketing-plan defaults. If a generation above the staker is empty (no sponsor recorded), the walk simply stops there.</p>
+  </div>
+</section>
+
+<!-- LEVELS + CALCULATOR -->
+<section id="calc">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">02 · Level breakdown &amp; calculator</div>
+      <h2>What one stake pays each generation</h2>
+      <p>The math is the contract's exactly: level 1 gets <span class="sym">V × directBps / 10000</span>, levels 2–6 each get <span class="sym">V × indirectBps / 10000</span>. Enter a stake value to see every slice.</p>
+    </div>
+    <div class="calc">
+      <div class="bar"><span class="led"></span><b>Referral calculator</b></div>
+      <div class="ctrls">
+        <div class="field">
+          <label for="amtIn">Downline stake value (USDT)</label>
+          <input type="number" id="amtIn" value="1000" min="1" step="1" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label>Quick amounts</label>
+          <div id="chips" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="ro good"><div class="k">Direct sponsor (L1)</div><div class="v num" id="roDirect">—</div></div>
+        <div class="ro rose"><div class="k">Each indirect (L2–L6)</div><div class="v num" id="roIndirect">—</div></div>
+        <div class="ro"><div class="k">Total paid up the tree</div><div class="v num" id="roTotal">—</div></div>
+      </div>
+      <div class="ladder" id="calcLadder" style="margin-top:8px"></div>
+      <p class="note">Every earner's slice is credited to their <strong>held referral balance</strong> the instant the stake fires; they claim it to their wallet with <span class="sym">releaseHeld</span>. "Downline stake value" is illustrative — the payouts scale with each stake.</p>
+    </div>
+  </div>
+</section>
+
+<!-- TREE + FUNDING -->
+<section id="tree">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">03 · Where the money comes from</div>
+      <h2>Funded by the stake, held until you claim</h2>
+    </div>
+    <div class="cards g2" style="align-items:start">
+      <div class="card">
+        <h3>The stake pays for itself</h3>
+        <div class="flow">
+          <div class="node"><div class="t"><span class="ic2">1</span>Stake</div><div class="d">A member opens a USDT stake of value <span class="sym">V</span>.</div></div>
+          <div class="arr">→</div>
+          <div class="node"><div class="t"><span class="ic2">2</span>Reserve</div><div class="d">10% of V is set aside into the leadership pool as the referral slice.</div></div>
+          <div class="arr">→</div>
+          <div class="node"><div class="t"><span class="ic2">3</span>Pay up</div><div class="d">The pool credits each upline's held referral balance up the affiliate tree.</div></div>
+        </div>
+        <ul class="tick" style="margin-top:12px">
+          <li>Because the 10% comes from the staker's <strong>own USDT</strong>, referral is <strong>zero-sum</strong> — no subsidy pool to farm.</li>
+          <li>It fires on <strong>USDT-funded stakes</strong> (and company-reward stakes); pure-ORBIX personal stakes pay none.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Held first, then released</h3>
+        <ul class="tick">
+          <li>Each payout lands in your <strong>held referral balance</strong> (<span class="sym">heldIncomeReferral</span>) — tracked separately from your leadership override, so you always see where income came from.</li>
+          <li>Call <span class="sym">releaseHeld()</span> to move it (with any override income) to your withdrawable OrbixAssets vault balance.</li>
+          <li>The USDT stays <strong>backed in the pool</strong> until you release it; an admin sweep can never touch balances owed to members.</li>
+          <li>Referral pays regardless of your <strong>rank</strong> — you don't need to qualify for a leadership tier to earn it.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTRACT MAP -->
+<section id="verify">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">04 · Parity check</div>
+      <h2>Every claim, mapped to the contract</h2>
+      <p>Verify this page against <code>leadership.sol</code>. Each rule resolves to a concrete field, function, or branch.</p>
+    </div>
+    <div class="tbl-wrap map">
+      <table id="mapTbl"><thead><tr><th>Rule in plain language</th><th>Where it lives in the contract</th><th class="n">Value</th></tr></thead><tbody></tbody></table>
+    </div>
+    <p class="note" style="margin-top:14px">Rates shown are the marketing-plan defaults and are <strong>admin-tunable PER LEVEL</strong>: <span class="sym">setReferralLevels([bps…])</span> sets each level's rate individually (index 0 = the direct sponsor), while <span class="sym">setReferralPlan(direct, indirect, levels)</span> is a flat-plan shortcut. The reserve (their sum) must fit the stake-split invariant (leadership + liquidity + referral ≤ 100%).</p>
+    <div>
+      <a class="xref" href="./staking-explainer.html">↔ Staking program explainer</a>
+      <a class="xref" href="./override-explainer.html">↔ Leadership override explainer</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">ORBIX Referral — contract explainer · generated from <code>projects/orbix/contracts/leadership.sol</code>. Figures are contract defaults. Not financial advice.</div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var BPS=10000, DIRECT=500, INDIRECT=100, LEVELS=5;
+  var $=function(s,r){return (r||document).querySelector(s);};
+  var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));};
+  var fmtUSD=function(n){var d=n<100?2:0; return "$"+ (Math.round(n*100)/100).toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d});};
+
+  $("#themeBtn").addEventListener("click",function(){
+    var cur=document.documentElement.getAttribute("data-theme");
+    if(!cur){cur=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}
+    document.documentElement.setAttribute("data-theme",cur==="dark"?"light":"dark");
+  });
+
+  // level model: [label, bps, direct?]
+  function levels(){
+    var a=[["Direct sponsor",DIRECT,true]];
+    for(var i=2;i<=1+LEVELS;i++) a.push(["Level "+i,INDIRECT,false]);
+    return a;
+  }
+
+  function renderLadder(el, V){
+    el.innerHTML="";
+    var maxBps=DIRECT;
+    levels().forEach(function(l,idx){
+      var pay=V*l[1]/BPS;
+      var row=document.createElement("div");
+      row.className="rung"+(l[2]?" direct":"");
+      row.innerHTML=
+        '<span class="lv">L'+(idx+1)+'</span>'+
+        '<span class="who">'+l[0]+'<small>'+(l[1]/100)+'% of the stake</small></span>'+
+        '<span class="bpsbar"><i style="width:'+(l[1]/maxBps*100)+'%"></i></span>'+
+        '<span class="amt">'+fmtUSD(pay)+'</span>';
+      el.appendChild(row);
+    });
+  }
+
+  // hero ladder at $1000
+  renderLadder($("#heroLadder"),1000);
+
+  // calculator
+  var amt=1000;
+  var quicks=[100,500,1000,5000,25000];
+  (function(){
+    var box=$("#chips");
+    quicks.forEach(function(a){
+      var b=document.createElement("button"); b.className="chip"; b.type="button";
+      b.textContent="$"+a.toLocaleString("en-US");
+      b.addEventListener("click",function(){ amt=a; $("#amtIn").value=a; calc(); });
+      box.appendChild(b);
+    });
+  })();
+  function calc(){
+    var direct=amt*DIRECT/BPS, indirect=amt*INDIRECT/BPS;
+    var total=direct+indirect*LEVELS;
+    $("#roDirect").textContent=fmtUSD(direct);
+    $("#roIndirect").textContent=fmtUSD(indirect);
+    $("#roTotal").textContent=fmtUSD(total)+"  (10%)";
+    renderLadder($("#calcLadder"),amt);
+  }
+  $("#amtIn").addEventListener("input",function(){ var v=parseFloat(this.value); amt=v>0?v:0; calc(); });
+  calc();
+
+  // contract map
+  (function(){
+    var rows=[
+      ["Referral rides the affiliate tree","_payReferral → accounts.getAffiliate(up)","sponsorship chain"],
+      ["Direct sponsor rate","directBps","500 (5%)"],
+      ["Indirect rate per level","indirectBps","100 (1%)"],
+      ["Number of indirect levels","indirectLevels","5"],
+      ["Total slice reserved per stake","referralReserveBps = direct + indirect × levels","1000 (10%)"],
+      ["Level 1 payout","V × directBps / BPS","5% of the stake"],
+      ["Levels 2–6 payout","V × indirectBps / BPS","1% each"],
+      ["Funded from the stake itself","_routeStakeUsdt → pool gets (leadershipBps + referralReserveBps)×V","zero-sum"],
+      ["Fires on USDT-funded stakes","recordStake(staker, V)","recorded volume V"],
+      ["Held first, by source","heldIncomeReferral[up] += amt","separate from override"],
+      ["Claim to your wallet","releaseHeld()","pool → vault balance"],
+      ["No rank gate — but a LIVENESS gate","_payReferral skips activeStake==0 && rankFloor==0","must be live to receive"],
+      ["Configurable within the split cap","setReferralPlan(direct, indirect, levels)","≤ 100% total"]
+    ];
+    var tb=$("#mapTbl tbody");
+    rows.forEach(function(r){
+      var tr=document.createElement("tr");
+      tr.innerHTML='<td>'+r[0]+'</td><td><span class="sym">'+r[1]+'</span></td><td class="n"><span class="mono">'+r[2]+'</span></td>';
+      tb.appendChild(tr);
+    });
+  })();
+})();
+</script>

@@ -1,0 +1,652 @@
+<meta charset="utf-8">
+<title>ORBIX Membership — Contract Explainer</title>
+<style>
+  :root{
+    --bg:#0e1521; --bg-2:#0a0f18; --surface:#16202f; --surface-2:#1d2a3d;
+    --border:#284058; --border-soft:#1e2c3f;
+    --text:#e7edf4; --muted:#8fa0b6; --faint:#647896;
+    --accent:#c8fa46; --accent-fill:#c8fa46; --on-accent:#0e1521; --accent-dim:#9bc72f;
+    --amber:#e7a94e; --sky:#5ec8e2; --rose:#e77c86;
+    --ring:#22344a; --ring-lit:#c8fa46;
+    --shadow:0 1px 0 rgba(255,255,255,.03), 0 18px 40px -24px rgba(0,0,0,.7);
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --maxw:1080px;
+  }
+  @media (prefers-color-scheme: light){
+    :root{
+      --bg:#eef2f7; --bg-2:#e4eaf2; --surface:#ffffff; --surface-2:#f4f8fc;
+      --border:#d3dde9; --border-soft:#e3eaf3;
+      --text:#132133; --muted:#4d5f75; --faint:#7688a0;
+      --accent:#4c7a06; --accent-fill:#bef23a; --on-accent:#13202f; --accent-dim:#5f8f0a;
+      --amber:#a96a12; --sky:#1683a1; --rose:#c0434f;
+      --ring:#cdd8e6; --ring-lit:#6f9c14;
+      --shadow:0 1px 0 rgba(255,255,255,.6), 0 18px 40px -26px rgba(30,50,80,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0e1521; --bg-2:#0a0f18; --surface:#16202f; --surface-2:#1d2a3d;
+    --border:#284058; --border-soft:#1e2c3f; --text:#e7edf4; --muted:#8fa0b6; --faint:#647896;
+    --accent:#c8fa46; --accent-fill:#c8fa46; --on-accent:#0e1521; --accent-dim:#9bc72f;
+    --amber:#e7a94e; --sky:#5ec8e2; --rose:#e77c86; --ring:#22344a; --ring-lit:#c8fa46;
+    --shadow:0 1px 0 rgba(255,255,255,.03), 0 18px 40px -24px rgba(0,0,0,.7);
+  }
+  :root[data-theme="light"]{
+    --bg:#eef2f7; --bg-2:#e4eaf2; --surface:#ffffff; --surface-2:#f4f8fc;
+    --border:#d3dde9; --border-soft:#e3eaf3; --text:#132133; --muted:#4d5f75; --faint:#7688a0;
+    --accent:#4c7a06; --accent-fill:#bef23a; --on-accent:#13202f; --accent-dim:#5f8f0a;
+    --amber:#a96a12; --sky:#1683a1; --rose:#c0434f; --ring:#cdd8e6; --ring-lit:#6f9c14;
+    --shadow:0 1px 0 rgba(255,255,255,.6), 0 18px 40px -26px rgba(30,50,80,.35);
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;background:
+      radial-gradient(1200px 600px at 80% -10%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 60%),
+      var(--bg);
+    color:var(--text);font-family:var(--sans);line-height:1.6;
+    font-size:16px;-webkit-font-smoothing:antialiased;text-underline-offset:3px}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  section{padding:46px 0;border-top:1px solid var(--border-soft)}
+  h1,h2,h3{font-weight:700;letter-spacing:-.02em;text-wrap:balance;margin:0}
+  p{margin:0;max-width:66ch;color:var(--muted)}
+  p strong,li strong{color:var(--text);font-weight:600}
+  code,.mono{font-family:var(--mono)}
+  .num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+  a{color:var(--accent)}
+
+  /* eyebrow / labels */
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--faint);display:flex;align-items:center;gap:9px}
+  .eyebrow::before{content:"";width:22px;height:1px;background:var(--accent);display:inline-block;opacity:.8}
+  .sec-head{display:flex;flex-direction:column;gap:10px;margin-bottom:26px}
+  .sec-head h2{font-size:clamp(24px,3.4vw,32px)}
+  .sec-head p{font-size:16px}
+
+  /* code chips referencing the contract */
+  .sym{font-family:var(--mono);font-size:.86em;background:var(--surface-2);border:1px solid var(--border);
+    border-radius:6px;padding:1px 6px;color:var(--text);white-space:nowrap}
+  .sym.acc{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 45%,var(--border))}
+
+  /* ---------- hero ---------- */
+  header.hero{padding:60px 0 40px}
+  .hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:38px;align-items:center}
+  @media(max-width:820px){.hero-grid{grid-template-columns:1fr;gap:30px}}
+  .brand{display:flex;align-items:center;gap:11px;margin-bottom:26px}
+  .brand .dot{width:12px;height:12px;border-radius:50%;background:var(--accent);
+    box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent)}
+  .brand b{font-family:var(--mono);letter-spacing:.34em;font-size:13px;text-transform:uppercase}
+  .hero h1{font-size:clamp(32px,5.4vw,52px);line-height:1.04}
+  .hero h1 em{font-style:normal;color:var(--accent)}
+  .hero .lede{margin-top:18px;font-size:18px;max-width:52ch}
+  .src{margin-top:18px;font-family:var(--mono);font-size:12.5px;color:var(--faint);display:flex;gap:8px;flex-wrap:wrap}
+  .src b{color:var(--muted);font-weight:600}
+  .statrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+  .stat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 15px;min-width:118px}
+  .stat .k{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+  .stat .v{font-size:22px;font-weight:700;margin-top:3px;font-variant-numeric:tabular-nums}
+  .stat .v small{font-size:13px;color:var(--muted);font-weight:600}
+  #orbitWrap{position:relative;aspect-ratio:1;width:100%;max-width:420px;margin:0 auto}
+  #orbit{width:100%;height:100%;display:block}
+  .orbit-cap{position:absolute;inset:auto 0 -6px 0;text-align:center;font-family:var(--mono);
+    font-size:11px;color:var(--faint);letter-spacing:.05em}
+
+  /* ---------- cards / grids ---------- */
+  .cards{display:grid;gap:16px}
+  .g2{grid-template-columns:1fr 1fr}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  @media(max-width:760px){.g2,.g3{grid-template-columns:1fr}}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px 20px;box-shadow:var(--shadow)}
+  .card h3{font-size:16px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+  .card p{font-size:14.5px}
+  .card .ic{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;flex:none;
+    background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent);font-family:var(--mono);font-size:13px;font-weight:700}
+
+  ul.tick{list-style:none;padding:0;margin:10px 0 0;display:flex;flex-direction:column;gap:9px}
+  ul.tick li{position:relative;padding-left:22px;font-size:14.5px;color:var(--muted)}
+  ul.tick li::before{content:"›";position:absolute;left:4px;top:-1px;color:var(--accent);font-weight:700}
+
+  /* ---------- fee split bar ---------- */
+  .split{display:flex;height:52px;border-radius:11px;overflow:hidden;border:1px solid var(--border);margin:6px 0 16px}
+  .split .seg{display:flex;align-items:center;justify-content:center;min-width:0;position:relative;
+    font-family:var(--mono);font-size:12px;font-weight:700;color:#0e1521;transition:flex-basis .35s ease}
+  .split .seg span{padding:0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  /* ---------- tables ---------- */
+  .tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:12px;background:var(--surface)}
+  table{border-collapse:collapse;width:100%;font-size:14px}
+  th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--border-soft);white-space:nowrap}
+  th{font-family:var(--mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);
+    background:var(--surface-2);position:sticky;top:0}
+  td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr.tot td{font-weight:700;background:var(--surface-2);border-top:1px solid var(--border)}
+  .mut{color:var(--muted)}
+
+  /* ---------- calculators ---------- */
+  .calc{background:linear-gradient(180deg,var(--surface),color-mix(in srgb,var(--surface) 88%,var(--bg-2)));
+    border:1px solid var(--border);border-radius:16px;padding:22px;box-shadow:var(--shadow)}
+  .calc .bar{display:flex;align-items:center;gap:8px;margin-bottom:18px}
+  .calc .bar .led{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent)}
+  .calc .bar b{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .ctrls{display:flex;flex-wrap:wrap;gap:16px 22px;align-items:flex-end}
+  .field{display:flex;flex-direction:column;gap:7px}
+  .field label{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+  .seg-btns{display:flex;background:var(--surface-2);border:1px solid var(--border);border-radius:9px;padding:3px;gap:2px}
+  .seg-btns button{appearance:none;border:0;background:transparent;color:var(--muted);font-family:var(--mono);
+    font-size:13px;padding:7px 12px;border-radius:6px;cursor:pointer;font-variant-numeric:tabular-nums}
+  .seg-btns button[aria-pressed="true"]{background:var(--accent-fill);color:var(--on-accent);font-weight:700}
+  input[type=number]{width:130px;background:var(--surface-2);border:1px solid var(--border);border-radius:9px;
+    color:var(--text);font-family:var(--mono);font-size:15px;padding:9px 11px}
+  input[type=range]{width:180px;accent-color:var(--accent)}
+  .readout{display:flex;flex-wrap:wrap;gap:12px;margin-top:20px}
+  .ro{flex:1;min-width:150px;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+  .ro .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+  .ro .v{font-size:26px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+  .ro.good .v{color:var(--accent)} .ro.warn .v{color:var(--amber)} .ro.sky .v{color:var(--sky)}
+  .note{font-size:12.5px;color:var(--faint);margin-top:14px;font-style:italic;max-width:70ch}
+  button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+
+  /* status pills */
+  .pill{font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:999px;font-weight:700;letter-spacing:.02em}
+  .pill.on{background:color-mix(in srgb,var(--accent) 20%,transparent);color:var(--accent)}
+  .pill.off{background:color-mix(in srgb,var(--amber) 18%,transparent);color:var(--amber)}
+
+  /* flow diagram */
+  .flow{display:flex;flex-wrap:wrap;align-items:stretch;gap:10px;margin-top:6px}
+  .flow .node{flex:1;min-width:150px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px}
+  .flow .node .t{font-weight:700;font-size:14px;display:flex;align-items:center;gap:7px}
+  .flow .node .d{font-size:13px;color:var(--muted);margin-top:5px}
+  .flow .arr{align-self:center;color:var(--accent);font-family:var(--mono);font-size:20px;flex:none}
+  @media(max-width:760px){.flow .arr{transform:rotate(90deg)}}
+
+  /* contract map */
+  .map td:first-child{color:var(--text);font-weight:600}
+  .map td .sym{white-space:normal}
+  footer{padding:34px 0 60px;color:var(--faint);font-size:13px;border-top:1px solid var(--border-soft)}
+  .toggle{position:fixed;top:14px;right:14px;z-index:10;background:var(--surface);border:1px solid var(--border);
+    color:var(--muted);font-family:var(--mono);font-size:12px;padding:7px 11px;border-radius:9px;cursor:pointer}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<button class="toggle" id="themeBtn" aria-label="Toggle light or dark theme">◐ theme</button>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="brand"><span class="dot"></span><b>Orbix</b></div>
+    <div class="hero-grid">
+      <div>
+        <h1>The Membership plan, <em>exactly</em> as the contract runs it.</h1>
+        <p class="lede">A plain-language, number-accurate walkthrough of <code>OrbixMembership</code> — the $20 subscription, the five-way fee split, the 20-level Unilevel plan, and the community reward that now becomes staking savings. Every figure below is read straight from the source.</p>
+        <div class="statrow">
+          <div class="stat"><div class="k">Membership fee</div><div class="v">$20<small> USDT</small></div></div>
+          <div class="stat"><div class="k">First term</div><div class="v">90<small> days</small></div></div>
+          <div class="stat"><div class="k">Renewals</div><div class="v">30<small> days</small></div></div>
+          <div class="stat"><div class="k">Unilevel depth</div><div class="v">20<small> levels</small></div></div>
+        </div>
+        <div class="src">
+          <span><b>source:</b> projects/orbix/contracts/membership.sol</span>
+          <span><b>fn:</b> _distributeUnilevel · subscribe · redeemCommunitySavings</span>
+        </div>
+      </div>
+      <div>
+        <div id="orbitWrap">
+          <canvas id="orbit" aria-label="Orbital diagram of the 20 unilevel levels around a member"></canvas>
+          <div class="orbit-cap" id="orbitCap">20 orbital levels · $0.30 each</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ SUBSCRIPTION ============ -->
+<section id="subscription">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">01 · The subscription</div>
+      <h2>One $20 charge, paid from your vault balance</h2>
+      <p>Registration is free. Subscribing charges the fee from your <code>OrbixAssets</code> vault balance; any shortfall is drawn from a credit line an admin has granted you and recorded as debt. Members with a funded balance are unaffected.</p>
+    </div>
+    <div class="cards g3">
+      <div class="card">
+        <h3><span class="ic">$</span>The fee</h3>
+        <p><strong>$20 USDT</strong> per subscription — first term or renewal. Charged via <span class="sym">debitWithCredit(user, USDT, 20)</span>: spends balance first, borrows the rest.</p>
+      </div>
+      <div class="card">
+        <h3><span class="ic">⏱</span>The term</h3>
+        <p>Your <strong>first-ever</strong> subscription lasts <strong>90 days</strong> — a 30-day base plus a one-time 60-day launch promo. Every <strong>renewal</strong> adds <strong>30 days</strong>, stacked onto any time remaining.</p>
+      </div>
+      <div class="card">
+        <h3><span class="ic">↑</span>Qualifying your sponsor</h3>
+        <p>Your <strong>first-ever</strong> subscription bumps your sponsor's <span class="sym">qualifiedDirects</span> by one. That count is what unlocks their earning depth (next section). It never decreases.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FEE SPLIT ============ -->
+<section id="allocation">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">02 · Where the $20 goes</div>
+      <h2>Five allocations, conserved to the last cent</h2>
+      <p>On every subscription the fee is split into five buckets by basis-point weights that must sum to 100% (the contract enforces <span class="sym">liquidity + sys + community + unilevel + profit == BPS</span>). Nothing is left over — unclaimed unilevel levels fall through to Profit.</p>
+    </div>
+    <div class="split" id="splitBar" role="img" aria-label="Fee allocation bar"></div>
+    <div class="cards g2" style="align-items:start">
+      <div class="tbl-wrap">
+        <table id="splitTbl">
+          <thead><tr><th>Allocation</th><th class="n">bps</th><th class="n">Share</th><th class="n">USDT</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="calc">
+        <div class="bar"><span class="led"></span><b>Fee-split calculator</b></div>
+        <div class="ctrls">
+          <div class="field">
+            <label for="feeIn">Membership fee (USDT)</label>
+            <input type="number" id="feeIn" value="20" min="1" step="1" inputmode="decimal">
+          </div>
+        </div>
+        <p class="note">The weights are fixed in the contract; only the fee scales. At the default $20 the buckets are $5 / $1 / $1 / $6 / $7. Change the fee to see each bucket recompute as <span class="sym">fee × bps / 10000</span>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ UNILEVEL ============ -->
+<section id="unilevel">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">03 · Unilevel Leadership Payout · $6.00 (30%)</div>
+      <h2>$0.30 per level, up to 20 levels deep</h2>
+      <p>The $6 unilevel pool pays <strong>$0.30 per level</strong> — that's <strong>1.5% of the $20 fee</strong> — up the <strong>binary tree</strong> (the compensation genealogy, <em>not</em> the referral tree), 20 levels max. But you only collect a level's $0.30 when <strong>both</strong> hold: you're an <strong>active subscriber</strong>, and you're <strong>qualified deep enough</strong> to reach it. Any level no qualified, active upline claims is forfeited to Profit.</p>
+    </div>
+
+    <div class="cards g2" style="align-items:start;margin-bottom:18px">
+      <div class="card">
+        <h3>The qualification ladder</h3>
+        <p>Your reach is set by <span class="sym">qualifiedDirects</span> — your <strong>personally sponsored</strong> members who have subscribed at least once — through <span class="sym">_maxLevel()</span>. You <em>qualify</em> by sponsoring directs; you <em>earn</em> on your <strong>binary</strong> downline:</p>
+        <div class="tbl-wrap" style="margin-top:12px">
+          <table id="ladderTbl">
+            <thead><tr><th>Qualified directs</th><th class="n">Earns to level</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <h3>What "forfeited" means</h3>
+        <ul class="tick">
+          <li>Every level from 1 to 20 carries a <strong>$0.30</strong> slice of a subscription's fee.</li>
+          <li>An upline that's <strong>lapsed</strong> (not subscribed) or <strong>under-qualified</strong> for that depth <strong>skips</strong> the slice — it's added to <span class="sym">residual</span>.</li>
+          <li>All residual is credited to the <strong>Profit wallet</strong>, so the $6 pool is always fully spent.</li>
+          <li><span class="sym">unilevelIncome</span> tracks your lifetime earnings for the dashboard; the spendable balance lives in the vault.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="calc">
+      <div class="bar"><span class="led"></span><b>Unilevel income calculator</b></div>
+      <div class="ctrls">
+        <div class="field">
+          <label>Your qualified directs → depth</label>
+          <div class="seg-btns" id="rankBtns" role="group" aria-label="Qualified directs">
+            <button data-d="0">0</button><button data-d="1">1</button><button data-d="2" aria-pressed="true">2+</button>
+          </div>
+        </div>
+        <div class="field">
+          <label for="kIn">Binary children each member brings (<span id="kOut" class="num">2</span>)</label>
+          <input type="range" id="kIn" min="1" max="2" step="1" value="2">
+        </div>
+      </div>
+      <div class="readout">
+        <div class="ro good"><div class="k">Unlocked depth</div><div class="v"><span id="roDepth">20</span> lvls</div></div>
+        <div class="ro"><div class="k">Org in reach</div><div class="v num" id="roMembers">—</div></div>
+        <div class="ro good"><div class="k">Income / cycle</div><div class="v num" id="roIncome">—</div></div>
+        <div class="ro warn"><div class="k">Forfeited to Profit</div><div class="v num" id="roForfeit">—</div></div>
+      </div>
+      <div class="tbl-wrap" style="margin-top:18px">
+        <table id="lvlTbl">
+          <thead><tr><th>Level</th><th class="n">Members</th><th class="n">Rate</th><th>Status</th><th class="n">Your earnings</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="note">Illustrative maximum. It assumes a uniform binary tree where every member brings the same number of binary children (≤ 2) and <strong>each holds an active subscription and pays once this cycle</strong>. The contract pays a level only when you are an active subscriber qualified to that depth — otherwise that level's $0.30 is forfeited to Profit, exactly as the "Forfeited" figure shows for the levels beyond your depth.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ COMMUNITY SAVINGS ============ -->
+<section id="community">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">04 · Community Rewards · $1.00 (5%)</div>
+      <h2>The 20th-level reward, now staking savings</h2>
+      <p>The $1 community slice is the <strong>20th-level reward</strong>. On each subscription it goes to the member sitting on the subscriber's <strong>deepest (20th) level</strong> — if they're an active subscriber — as on-chain <span class="sym">communitySavings</span>, a per-member USDT balance <strong>backed by a dedicated pool</strong>. It isn't withdrawable: it exists to help members <strong>save toward staking</strong>.</p>
+    </div>
+
+    <div class="flow" style="margin-bottom:20px">
+      <div class="node"><div class="t"><span class="ic" style="background:color-mix(in srgb,var(--sky) 16%,transparent);color:var(--sky)">1</span>Accrue</div><div class="d">Each qualifying subscription adds <strong>$1</strong> to your <span class="sym">communitySavings</span>, matched by real USDT in the backed pool.</div></div>
+      <div class="arr">→</div>
+      <div class="node"><div class="t"><span class="ic" style="background:color-mix(in srgb,var(--sky) 16%,transparent);color:var(--sky)">2</span>Redeem</div><div class="d">Redeem in <strong>25-USDT units</strong> via <span class="sym">redeemCommunitySavings(units)</span> — moves to a staking-only credit.</div></div>
+      <div class="arr">→</div>
+      <div class="node"><div class="t"><span class="ic" style="background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent)">3</span>Stake</div><div class="d">Sits in OrbixStaking <span class="sym">userBalance</span> — spendable only to open a stake. Never withdrawable as cash.</div></div>
+    </div>
+
+    <div class="cards g2" style="align-items:start">
+      <div class="card">
+        <h3>Two landing spots — by exact rule</h3>
+        <ul class="tick">
+          <li><strong>Active 20th-level upline exists</strong> → the $1 becomes their <span class="sym">communitySavings</span> (backed, staking-redeemable). <span class="pill on">SAVINGS</span></li>
+          <li><strong>Tree shorter than 20, or that upline lapsed</strong> → the $1 falls back to the company <span class="sym">communityWallet</span> instead. <span class="pill off">FALLBACK</span></li>
+          <li>Either way the $1 is fully allocated — the pool invariant <span class="sym">Σ communitySavings == pool USDT</span> always holds.</li>
+        </ul>
+      </div>
+      <div class="calc">
+        <div class="bar"><span class="led" style="background:var(--sky);box-shadow:0 0 8px var(--sky)"></span><b>Savings → staking calculator</b></div>
+        <div class="ctrls">
+          <div class="field">
+            <label for="csIn">Subscriptions where you're the 20th-level upline</label>
+            <input type="number" id="csIn" value="60" min="0" step="1" inputmode="numeric">
+          </div>
+        </div>
+        <div class="readout">
+          <div class="ro sky"><div class="k">Community savings</div><div class="v num" id="csSaved">—</div></div>
+          <div class="ro good"><div class="k">Redeemable units</div><div class="v num" id="csUnits">—</div></div>
+          <div class="ro"><div class="k">Toward next unit</div><div class="v num" id="csRem">—</div></div>
+        </div>
+        <p class="note">$1 accrues per qualifying subscription; every 25 USDT is one redeemable staking unit (<span class="sym">SAVINGS_UNIT = 25</span>). The remainder keeps accruing toward the next unit.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BINARY PLACEMENT (TECHNICAL) ============ -->
+<section id="placement">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">05 · Binary placement · technical</div>
+      <h2>Where you land in the tree — and the depth cap</h2>
+      <p>The Unilevel plan pays up the <strong>binary tree</strong>, so where a new member is placed matters. At
+        registration you pick a placement mode and the contract resolves the exact open slot with
+        <span class="sym">getPlacement(sponsor, option)</span> — the same walk <span class="sym">register</span>
+        re-runs on-chain, so the preview can never disagree with the actual placement.</p>
+    </div>
+
+    <div class="cards g2" style="align-items:start;margin-bottom:18px">
+      <div class="card">
+        <h3>The sponsor is the top node</h3>
+        <p>Placement always searches <strong>from the sponsor you enter</strong> (the binary top node), never above it:</p>
+        <ul class="tick">
+          <li><strong>Force Left</strong> — walk the left spine to the first open left slot.</li>
+          <li><strong>Force Right</strong> — walk the right spine to the first open right slot.</li>
+          <li><strong>Auto (weakest leg)</strong> — descend the leg carrying the <em>lower</em> volume
+            (<span class="sym">salesVol + personalVol</span>), balancing the tree.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>The depth cap — <span class="sym">maxIteration = 20</span></h3>
+        <p>The Force-Left / Force-Right spine walk (<span class="sym">_binaryOpenNode</span>) is
+          <strong>bounded to 20 levels</strong>. If a spine is filled that deep, the walk stops and
+          <strong>falls back to the weakest-leg walk</strong> (<span class="sym">_binaryWeakLegNode</span>) —
+          it never keeps descending.</p>
+        <p class="note" style="margin-top:8px">This bounds gas to ≤20 storage reads per placement and guarantees
+          the search always terminates on a shallower open leg. Admin-tunable via
+          <span class="sym">setMaxIteration</span>.</p>
+      </div>
+    </div>
+
+    <div class="calc">
+      <div class="bar"><span class="led"></span><b>Why the 21st level is never reached</b></div>
+      <p>Take a fully-filled left spine 21 nodes deep and a <strong>Force-Left</strong> placement, cap at 20:</p>
+      <div class="tbl-wrap" style="margin-top:12px">
+        <table>
+          <thead><tr><th>hop (guard <span class="sym">&lt; 20</span>)</th><th>node</th><th>action</th></tr></thead>
+          <tbody>
+            <tr><td class="num">0</td><td>root · L0</td><td>left filled → descend to L1</td></tr>
+            <tr><td class="num">1</td><td>S1 · L1</td><td>left filled → descend to L2</td></tr>
+            <tr><td>…</td><td>…</td><td>…</td></tr>
+            <tr><td class="num">19</td><td>S19 · L19</td><td>left filled → descend to L20 (hops → 20)</td></tr>
+            <tr class="tot"><td colspan="2"><span class="sym">20 &lt; 20</span> is false → loop exits</td><td>→ fall back to <span class="sym">_binaryWeakLegNode</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">The walk descends at most 20 levels (to <strong>L20</strong>) and exits before it can even
+        read L20's child, so <strong>level 21 (S21) is never reached</strong>. It hands off to the weakest-leg
+        walk, which places at the sponsor's open <strong>right</strong> slot (L1). Foundry proof:
+        <span class="sym">test_openNode_falls_back_to_weakleg_at_maxIteration_20</span> — capped at 20 it returns
+        <span class="sym">(root, right)</span>; lift the cap and the same Force-Left reaches
+        <span class="sym">(S21, left)</span>.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTRACT MAP ============ -->
+<section id="verify">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">06 · Parity check</div>
+      <h2>Every claim, mapped to the contract</h2>
+      <p>Use this to verify the explainer against <code>membership.sol</code> line-for-line. Each rule above resolves to a concrete constant, function, or branch below.</p>
+    </div>
+    <div class="tbl-wrap map">
+      <table id="mapTbl">
+        <thead><tr><th>Rule in plain language</th><th>Where it lives in the contract</th><th class="n">Value</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="note" style="margin-top:16px">Live on BSC mainnet today; the community-savings → staking behaviour is built and tested but ships with the next redeploy. Constants shown are the contract defaults — <span class="sym">setParams</span> / <span class="sym">setAllocation</span> can retune the fee, depth, and weights (the split is always re-checked to 100%).</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    ORBIX Membership — contract explainer · generated from <code>projects/orbix/contracts/membership.sol</code>.
+    Figures are the contract's default parameters. Not financial advice.
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var BPS=10000, FEE=20, LEVELS=20;
+  var PER_LEVEL=FEE*3000/BPS/LEVELS;        // 0.30
+  var COMMUNITY=FEE*500/BPS;                 // 1.00
+  var UNIT=25;                              // SAVINGS_UNIT
+  var buckets=[
+    {key:"liquidity",label:"Liquidity Reserve",bps:2500,color:"var(--sky)"},
+    {key:"sys",label:"Blockchain Operation",bps:500,color:"#8aa0bd"},
+    {key:"community",label:"Community → Savings",bps:500,color:"var(--accent)"},
+    {key:"unilevel",label:"Unilevel Payout",bps:3000,color:"var(--accent-dim)"},
+    {key:"profit",label:"Profit Sharing",bps:3500,color:"var(--amber)"}
+  ];
+  var ladder=[[0,5],[1,10],[2,20]];
+  function maxLevel(d){ if(d>=2)return 20; if(d===1)return 10; return 5; }
+  var fmt=function(n){return n.toLocaleString("en-US");};
+  var usd=function(n){return "$"+ (Math.round(n*100)/100).toLocaleString("en-US",{minimumFractionDigits:(n%1?2:0),maximumFractionDigits:2});};
+  var $=function(s,r){return (r||document).querySelector(s);};
+  var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));};
+
+  /* ---- theme toggle ---- */
+  var btn=$("#themeBtn");
+  btn.addEventListener("click",function(){
+    var cur=document.documentElement.getAttribute("data-theme");
+    if(!cur){cur=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}
+    document.documentElement.setAttribute("data-theme",cur==="dark"?"light":"dark");
+    drawOrbit(curDepth);
+  });
+
+  /* ---- fee split ---- */
+  function renderSplit(fee){
+    var bar=$("#splitBar"); bar.innerHTML="";
+    var tb=$("#splitTbl tbody"); tb.innerHTML="";
+    buckets.forEach(function(b){
+      var amt=fee*b.bps/BPS, pct=b.bps/100;
+      var seg=document.createElement("div");
+      seg.className="seg"; seg.style.flex=b.bps+" 1 0"; seg.style.background=b.color;
+      seg.innerHTML='<span>'+pct+'%</span>'; seg.title=b.label+" — "+usd(amt);
+      bar.appendChild(seg);
+      var tr=document.createElement("tr");
+      tr.innerHTML='<td><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:'+b.color+';margin-right:8px;vertical-align:middle"></span>'+b.label+
+        '</td><td class="n">'+fmt(b.bps)+'</td><td class="n">'+pct+'%</td><td class="n">'+usd(amt)+'</td>';
+      tb.appendChild(tr);
+    });
+    var tot=document.createElement("tr"); tot.className="tot";
+    tot.innerHTML='<td>Total membership fee</td><td class="n">10,000</td><td class="n">100%</td><td class="n">'+usd(fee)+'</td>';
+    tb.appendChild(tot);
+  }
+  $("#feeIn").addEventListener("input",function(){
+    var v=parseFloat(this.value); if(!(v>0))v=0; renderSplit(v);
+  });
+  renderSplit(FEE);
+
+  /* ---- ladder table ---- */
+  (function(){
+    var tb=$("#ladderTbl tbody");
+    ladder.forEach(function(r){
+      var d=r[0], lv=r[1];
+      var tr=document.createElement("tr");
+      var label=d===0?"0 (none)":d===1?"1 direct":"2 or more directs";
+      tr.innerHTML='<td>'+label+'</td><td class="n">L'+lv+'</td>';
+      tb.appendChild(tr);
+    });
+  })();
+
+  /* ---- unilevel calculator ---- */
+  var curDepth=20, curDirects=2, k=2;
+  function calcUnilevel(){
+    var depth=maxLevel(curDirects);
+    var tb=$("#lvlTbl tbody"); tb.innerHTML="";
+    var income=0, forfeit=0, reach=0, shown=0;
+    for(var L=1;L<=LEVELS;L++){
+      var members=Math.pow(k,L);
+      reach+=members;
+      var slice=members*PER_LEVEL;
+      var unlocked=L<=depth;
+      if(unlocked){income+=slice;} else {forfeit+=slice;}
+      // render a representative set of rows to keep the table scannable
+      var showRow = L<=8 || L===depth || L===depth+1 || L===LEVELS || (L%4===0);
+      if(showRow){
+        shown++;
+        var tr=document.createElement("tr");
+        tr.innerHTML='<td class="num">L'+L+'</td><td class="n">'+fmt(members)+'</td><td class="n">'+usd(PER_LEVEL)+
+          '</td><td>'+(unlocked?'<span class="pill on">EARNS</span>':'<span class="pill off">forfeit</span>')+
+          '</td><td class="n">'+(unlocked?usd(slice):'<span class="mut">—</span>')+'</td>';
+        tb.appendChild(tr);
+      }
+    }
+    var tot=document.createElement("tr"); tot.className="tot";
+    tot.innerHTML='<td>Total · L1–L'+LEVELS+'</td><td class="n">'+fmt(reach)+'</td><td class="n"></td><td></td><td class="n">'+usd(income)+'</td>';
+    tb.appendChild(tot);
+    $("#roDepth").textContent=depth;
+    $("#roMembers").textContent=fmt(reach);
+    $("#roIncome").textContent=usd(income);
+    $("#roForfeit").textContent=usd(forfeit);
+    curDepth=depth; drawOrbit(depth);
+  }
+  $$("#rankBtns button").forEach(function(b){
+    b.addEventListener("click",function(){
+      $$("#rankBtns button").forEach(function(x){x.setAttribute("aria-pressed","false");});
+      b.setAttribute("aria-pressed","true");
+      curDirects=parseInt(b.getAttribute("data-d"),10);
+      calcUnilevel();
+    });
+  });
+  $("#kIn").addEventListener("input",function(){ k=parseInt(this.value,10); $("#kOut").textContent=k; calcUnilevel(); });
+
+  /* ---- community savings calculator ---- */
+  function calcSavings(){
+    var n=parseInt($("#csIn").value,10); if(!(n>=0))n=0;
+    var saved=n*COMMUNITY;
+    var units=Math.floor(saved/UNIT);
+    var rem=saved-units*UNIT;
+    $("#csSaved").textContent=usd(saved);
+    $("#csUnits").textContent=fmt(units);
+    $("#csRem").textContent=usd(rem)+" / $25";
+  }
+  $("#csIn").addEventListener("input",calcSavings);
+  calcSavings();
+
+  /* ---- contract map ---- */
+  (function(){
+    var rows=[
+      ["$20 membership fee, balance-or-credit","subscribe → assets.debitWithCredit(user, USDT, membershipFee)","membershipFee = 20"],
+      ["First term 90 days (30 base + 60 promo)","membershipDuration + membershipDurationPromo","30 + 60 = 90 d"],
+      ["Renewals add 30 days","membershipDuration (renewal path)","30 d"],
+      ["First sub qualifies your sponsor","subscribe → qualifiedDirects[sponsor] += 1","+1 (sticky)"],
+      ["Unilevel pays up the BINARY tree","_distributeUnilevel → accounts.getBinary(up)","binary ≠ referral"],
+      ["Fee split conserved to 100%","_requireValidSplit()","Σ bps == 10000"],
+      ["Liquidity reserve","liquidityBps","2500 · $5.00"],
+      ["Blockchain Operation (sys)","sysBps · sysWallet","500 · $1.00"],
+      ["Community → savings","communityBps","500 · $1.00"],
+      ["Unilevel pool","unilevelBps","3000 · $6.00"],
+      ["Profit Sharing (+ unilevel residual)","profitBps","3500 · $7.00"],
+      ["20 levels, $0.30 each","_distributeUnilevel: fee*unilevelBps/BPS/levels","$6 / 20 = $0.30"],
+      ["Earn a level only if active + qualified","isSubscribed(up) && _maxLevel(qualifiedDirects[up]) >= level","gate"],
+      ["Qualification ladder (directs → depth)","_maxLevel()","0→5 1→10 2+→20"],
+      ["Placement searches from the sponsor (top node)","getPlacement(sponsor, option) → register(sponsor, binaryParent, leg)","auto / left / right"],
+      ["Spine walk capped, else weakest-leg fallback","_binaryOpenNode → _binaryWeakLegNode","maxIteration = 20"],
+      ["Unclaimed levels → Profit","residual credited to profitWallet","balances the $6"],
+      ["Lifetime earnings tracker","unilevelIncome[earner]","records-only"],
+      ["20th-level reward = $1","communityReward = fee*communityBps/BPS","$1.00"],
+      ["Active 20th upline → backed savings","communitySavings[up] += ; creditBalance(pool)","success branch"],
+      ["No / lapsed 20th upline → company","creditBalance(communityWallet, USDT, $1)","fallback branch"],
+      ["Redeem in 25-USDT units to staking","redeemCommunitySavings(units)","SAVINGS_UNIT = 25"],
+      ["Savings are staking-only, not cash","balanceTransfer(pool→staking); staking.creditUserBalance","not withdrawable"]
+    ];
+    var tb=$("#mapTbl tbody");
+    rows.forEach(function(r){
+      var tr=document.createElement("tr");
+      tr.innerHTML='<td>'+r[0]+'</td><td><span class="sym">'+r[1]+'</span></td><td class="n"><span class="mono">'+r[2]+'</span></td>';
+      tb.appendChild(tr);
+    });
+  })();
+
+  /* ---- orbital canvas ---- */
+  var cv=$("#orbit"), ctx=cv.getContext("2d"), t0=0, reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function cssvar(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+  function sizeCanvas(){
+    var r=cv.getBoundingClientRect(), dpr=Math.min(devicePixelRatio||1,2);
+    cv.width=r.width*dpr; cv.height=r.height*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+    return {w:r.width,h:r.height};
+  }
+  function drawOrbit(depth){
+    var s=sizeCanvas(), cx=s.w/2, cy=s.h/2;
+    var lit=cssvar("--ring-lit")||"#c8fa46", dim=cssvar("--ring")||"#22344a",
+        txt=cssvar("--faint")||"#647896", acc=cssvar("--accent")||"#c8fa46";
+    ctx.clearRect(0,0,s.w,s.h);
+    var maxR=Math.min(cx,cy)-10, r0=14, step=(maxR-r0)/LEVELS;
+    // rings
+    for(var L=1;L<=LEVELS;L++){
+      var rr=r0+L*step, on=L<=depth;
+      ctx.beginPath(); ctx.arc(cx,cy,rr,0,Math.PI*2);
+      ctx.strokeStyle=on?lit:dim; ctx.globalAlpha=on?(0.35+0.5*(1-L/LEVELS)):0.4;
+      ctx.lineWidth=on?1.6:1; ctx.stroke(); ctx.globalAlpha=1;
+      // orbiting node on some lit rings
+      if(on && (L%2===0 || L===depth)){
+        var ang=(t0*0.00022*(1+ (LEVELS-L)*0.05)) + L*0.9;
+        var x=cx+Math.cos(ang)*rr, y=cy+Math.sin(ang)*rr;
+        ctx.beginPath(); ctx.arc(x,y,L===depth?3.4:2.2,0,Math.PI*2);
+        ctx.fillStyle=lit; ctx.globalAlpha=0.9; ctx.fill(); ctx.globalAlpha=1;
+      }
+    }
+    // depth marker labels at ladder breakpoints
+    ctx.font="10px "+(cssvar("--mono")||"monospace"); ctx.fillStyle=txt; ctx.textAlign="center";
+    [8,14,16,18,20].forEach(function(L){
+      var rr=r0+L*step;
+      ctx.globalAlpha=L<=depth?0.85:0.4;
+      ctx.fillText("L"+L, cx, cy-rr-3);
+    });
+    ctx.globalAlpha=1;
+    // center "you"
+    ctx.beginPath(); ctx.arc(cx,cy,5.5,0,Math.PI*2); ctx.fillStyle=acc; ctx.fill();
+    ctx.beginPath(); ctx.arc(cx,cy,10,0,Math.PI*2); ctx.strokeStyle=acc; ctx.globalAlpha=0.35; ctx.lineWidth=1.4; ctx.stroke(); ctx.globalAlpha=1;
+    $("#orbitCap").textContent="Earning to level "+depth+" · "+ (depth>0?fmt(depth)+" of 20 lit":"unqualified");
+  }
+  function loop(t){ t0=t; drawOrbit(curDepth); requestAnimationFrame(loop); }
+  window.addEventListener("resize",function(){drawOrbit(curDepth);});
+
+  // init
+  calcUnilevel();
+  if(reduce){ drawOrbit(curDepth); } else { requestAnimationFrame(loop); }
+})();
+</script>
