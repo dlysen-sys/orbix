@@ -1,0 +1,524 @@
+<meta charset="utf-8">
+<title>ORBIX Leadership Override — Contract Explainer</title>
+<style>
+  :root{
+    --bg:#0e1521; --bg-2:#0a0f18; --surface:#16202f; --surface-2:#1d2a3d;
+    --border:#284058; --border-soft:#1e2c3f;
+    --text:#e7edf4; --muted:#8fa0b6; --faint:#647896;
+    --accent:#c8fa46; --accent-fill:#c8fa46; --on-accent:#0e1521; --accent-dim:#9bc72f;
+    --amber:#e7a94e; --sky:#5ec8e2; --rose:#e77c86;
+    --ring:#22344a;
+    --shadow:0 1px 0 rgba(255,255,255,.03), 0 18px 40px -24px rgba(0,0,0,.7);
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --maxw:1080px;
+  }
+  @media (prefers-color-scheme: light){
+    :root{
+      --bg:#eef2f7; --bg-2:#e4eaf2; --surface:#ffffff; --surface-2:#f4f8fc;
+      --border:#d3dde9; --border-soft:#e3eaf3; --text:#132133; --muted:#4d5f75; --faint:#7688a0;
+      --accent:#4c7a06; --accent-fill:#bef23a; --on-accent:#13202f; --accent-dim:#5f8f0a;
+      --amber:#a96a12; --sky:#1683a1; --rose:#c0434f; --ring:#cdd8e6;
+      --shadow:0 1px 0 rgba(255,255,255,.6), 0 18px 40px -26px rgba(30,50,80,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0e1521; --bg-2:#0a0f18; --surface:#16202f; --surface-2:#1d2a3d;
+    --border:#284058; --border-soft:#1e2c3f; --text:#e7edf4; --muted:#8fa0b6; --faint:#647896;
+    --accent:#c8fa46; --accent-fill:#c8fa46; --on-accent:#0e1521; --accent-dim:#9bc72f;
+    --amber:#e7a94e; --sky:#5ec8e2; --rose:#e77c86; --ring:#22344a;
+    --shadow:0 1px 0 rgba(255,255,255,.03), 0 18px 40px -24px rgba(0,0,0,.7);
+  }
+  :root[data-theme="light"]{
+    --bg:#eef2f7; --bg-2:#e4eaf2; --surface:#ffffff; --surface-2:#f4f8fc;
+    --border:#d3dde9; --border-soft:#e3eaf3; --text:#132133; --muted:#4d5f75; --faint:#7688a0;
+    --accent:#4c7a06; --accent-fill:#bef23a; --on-accent:#13202f; --accent-dim:#5f8f0a;
+    --amber:#a96a12; --sky:#1683a1; --rose:#c0434f; --ring:#cdd8e6;
+    --shadow:0 1px 0 rgba(255,255,255,.6), 0 18px 40px -26px rgba(30,50,80,.35);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:
+      radial-gradient(1100px 560px at 82% -12%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 60%),
+      var(--bg);
+    color:var(--text);font-family:var(--sans);line-height:1.6;font-size:16px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  section{padding:46px 0;border-top:1px solid var(--border-soft)}
+  h1,h2,h3{font-weight:700;letter-spacing:-.02em;text-wrap:balance;margin:0}
+  p{margin:0;max-width:66ch;color:var(--muted)}
+  p strong,li strong{color:var(--text);font-weight:600}
+  code,.mono{font-family:var(--mono)}
+  .num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+  a{color:var(--accent)}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);display:flex;align-items:center;gap:9px}
+  .eyebrow::before{content:"";width:22px;height:1px;background:var(--accent);display:inline-block;opacity:.8}
+  .sec-head{display:flex;flex-direction:column;gap:10px;margin-bottom:26px}
+  .sec-head h2{font-size:clamp(24px,3.4vw,32px)}
+  .sec-head p{font-size:16px}
+  .sym{font-family:var(--mono);font-size:.86em;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:1px 6px;color:var(--text);white-space:nowrap}
+
+  header.hero{padding:60px 0 40px}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:38px;align-items:center}
+  @media(max-width:840px){.hero-grid{grid-template-columns:1fr;gap:28px}}
+  .brand{display:flex;align-items:center;gap:11px;margin-bottom:24px}
+  .brand .dot{width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent)}
+  .brand b{font-family:var(--mono);letter-spacing:.34em;font-size:13px;text-transform:uppercase}
+  .brand .sub{font-family:var(--mono);font-size:11px;color:var(--faint);letter-spacing:.1em;border-left:1px solid var(--border);padding-left:11px}
+  .hero h1{font-size:clamp(31px,5vw,50px);line-height:1.05}
+  .hero h1 em{font-style:normal;color:var(--accent)}
+  .hero .lede{margin-top:18px;font-size:18px;max-width:54ch}
+  .statrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+  .stat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 15px;min-width:112px}
+  .stat .k{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+  .stat .v{font-size:21px;font-weight:700;margin-top:3px;font-variant-numeric:tabular-nums}
+  .stat .v small{font-size:12px;color:var(--muted);font-weight:600}
+  .src{margin-top:18px;font-family:var(--mono);font-size:12.5px;color:var(--faint);display:flex;gap:8px;flex-wrap:wrap}
+  .src b{color:var(--muted);font-weight:600}
+
+  .cards{display:grid;gap:16px}
+  .g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}
+  @media(max-width:760px){.g2,.g3{grid-template-columns:1fr}}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;box-shadow:var(--shadow)}
+  .card h3{font-size:16px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+  .card p{font-size:14.5px}
+  .card .ic{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;flex:none;background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent);font-family:var(--mono);font-size:13px;font-weight:700}
+  ul.tick{list-style:none;padding:0;margin:10px 0 0;display:flex;flex-direction:column;gap:9px}
+  ul.tick li{position:relative;padding-left:22px;font-size:14.5px;color:var(--muted)}
+  ul.tick li::before{content:"›";position:absolute;left:4px;top:-1px;color:var(--accent);font-weight:700}
+
+  .tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:12px;background:var(--surface)}
+  table{border-collapse:collapse;width:100%;font-size:14px}
+  th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--border-soft);white-space:nowrap}
+  th{font-family:var(--mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);background:var(--surface-2);position:sticky;top:0}
+  td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr.tot td{font-weight:700;background:var(--surface-2);border-top:1px solid var(--border)}
+  tbody tr.hi td{background:color-mix(in srgb,var(--accent) 10%,transparent)}
+  .mut{color:var(--muted)}
+  .rk{font-family:var(--mono);font-weight:700;color:var(--accent)}
+
+  .calc{background:linear-gradient(180deg,var(--surface),color-mix(in srgb,var(--surface) 88%,var(--bg-2)));border:1px solid var(--border);border-radius:16px;padding:22px;box-shadow:var(--shadow)}
+  .calc .bar{display:flex;align-items:center;gap:8px;margin-bottom:18px}
+  .calc .bar .led{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent)}
+  .calc .bar b{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .ctrls{display:grid;grid-template-columns:repeat(2,1fr);gap:16px 22px;align-items:flex-end}
+  @media(max-width:640px){.ctrls{grid-template-columns:1fr}}
+  .field{display:flex;flex-direction:column;gap:7px}
+  .field label{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+  input[type=number]{width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:var(--mono);font-size:15px;padding:9px 11px}
+  input[type=range]{width:100%;accent-color:var(--accent)}
+  select{width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:var(--sans);font-size:14px;padding:9px 11px}
+  .rangeval{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:2px}
+  .readout{display:flex;flex-wrap:wrap;gap:12px;margin:20px 0 6px}
+  .ro{flex:1;min-width:140px;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+  .ro .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+  .ro .v{font-size:23px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+  .ro.good .v{color:var(--accent)}.ro.sky .v{color:var(--sky)}.ro.amber .v{color:var(--amber)}
+  .note{font-size:12.5px;color:var(--faint);margin-top:6px;font-style:italic;max-width:80ch}
+  button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+  .pill{font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:999px;font-weight:700}
+  .pill.on{background:color-mix(in srgb,var(--accent) 20%,transparent);color:var(--accent)}
+  .pill.off{background:color-mix(in srgb,var(--rose) 18%,transparent);color:var(--rose)}
+
+  /* two-leg diagram */
+  .tree2{display:flex;flex-direction:column;align-items:center;gap:0;margin-top:6px}
+  .you-node{background:var(--surface);border:1.5px solid var(--accent);border-radius:12px;padding:12px 18px;text-align:center;box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 12%,transparent)}
+  .you-node .t{font-weight:700}
+  .you-node .s{font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .branch{display:flex;gap:40px;margin-top:0;position:relative;padding-top:26px}
+  .branch::before{content:"";position:absolute;top:0;left:50%;width:1px;height:14px;background:var(--border)}
+  .leg-col{display:flex;flex-direction:column;align-items:center;gap:10px;position:relative;padding-top:14px}
+  .leg-col::before{content:"";position:absolute;top:0;width:60%;height:1px;background:var(--border)}
+  .leg-col.l::before{right:0}.leg-col.r::before{left:0}
+  .leg-node{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:11px 16px;text-align:center;min-width:150px}
+  .leg-node .lab{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+  .leg-node .amt{font-size:19px;font-weight:700;margin-top:3px;font-variant-numeric:tabular-nums}
+  .leg-node.l .amt{color:var(--accent)}.leg-node.r .amt{color:var(--sky)}
+  .leg-node .sub{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin-top:2px}
+
+  .flow{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+  .flow .node{flex:1;min-width:150px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px}
+  .flow .node .t{font-weight:700;font-size:14px;display:flex;align-items:center;gap:7px}
+  .flow .node .d{font-size:13px;color:var(--muted);margin-top:5px}
+  .flow .arr{align-self:center;color:var(--accent);font-family:var(--mono);font-size:20px;flex:none}
+  @media(max-width:760px){.flow .arr{transform:rotate(90deg)}}
+  .ic2{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;flex:none;background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent);font-family:var(--mono);font-size:13px;font-weight:700}
+
+  .map td:first-child{color:var(--text);font-weight:600}
+  .map td .sym{white-space:normal}
+  footer{padding:34px 0 60px;color:var(--faint);font-size:13px;border-top:1px solid var(--border-soft)}
+  .xref{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:12px;color:var(--muted);text-decoration:none;border:1px solid var(--border);border-radius:8px;padding:5px 10px;margin-top:6px;margin-right:8px}
+  .toggle{position:fixed;top:14px;right:14px;z-index:10;background:var(--surface);border:1px solid var(--border);color:var(--muted);font-family:var(--mono);font-size:12px;padding:7px 11px;border-radius:9px;cursor:pointer}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<button class="toggle" id="themeBtn" aria-label="Toggle light or dark theme">◐ theme</button>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="brand"><span class="dot"></span><b>Orbix</b><span class="sub">Leadership Override</span></div>
+    <div class="hero-grid">
+      <div>
+        <h1>Reach a rank. Earn <em>daily</em> on both legs. Forever.</h1>
+        <p class="lede">A number-accurate walkthrough of the ORBIX <strong>two-leg leadership override</strong> in <code>OrbixLeadership</code>. Climb ten ranks by group sales, then earn a <strong>passive daily yield</strong> on each of your two legs — left and right — for as long as you out-rank them. Ranks never demote, and each leg pays until it breaks away. Every figure is read straight from the source.</p>
+        <div class="statrow">
+          <div class="stat"><div class="k">Ranks</div><div class="v">10</div></div>
+          <div class="stat"><div class="k">Top rate</div><div class="v">50<small>%</small></div></div>
+          <div class="stat"><div class="k">Legs</div><div class="v">2<small> · L + R</small></div></div>
+          <div class="stat"><div class="k">Payout</div><div class="v"><small>daily, USDT</small></div></div>
+        </div>
+        <div class="src"><span><b>source:</b> projects/orbix/contracts/leadership.sol</span></div>
+      </div>
+      <div>
+        <div class="card" style="padding:20px">
+          <div style="font-family:var(--mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);margin-bottom:6px">You earn on both legs at once</div>
+          <div class="tree2">
+            <div class="you-node"><div class="t">You</div><div class="s" id="heroYouRank">Rank 5 · 25%</div></div>
+            <div class="branch">
+              <div class="leg-col l"><div class="leg-node l"><div class="lab">Left leg</div><div class="amt" id="heroL">—</div><div class="sub">/ day</div></div></div>
+              <div class="leg-col r"><div class="leg-node r"><div class="lab">Right leg</div><div class="amt" id="heroR">—</div><div class="sub">/ day</div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- RANK LADDER -->
+<section id="ranks">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">01 · The ladder</div>
+      <h2>Ten ranks, 5% to 50%</h2>
+      <p>Your rank is set by <strong>three things</strong>: your <strong>group sales volume</strong> (all the USDT staked in your downline), your count of <strong>active direct referrals</strong>, and your own <strong>minimum self-stake</strong> (your live open position). Each rank up is <strong>+5%</strong> to your override rate. Rank is a <strong>high-water mark</strong> — once reached it's kept — but your <em>earning</em> is re-priced live by your self-stake (below).</p>
+    </div>
+    <div class="tbl-wrap">
+      <table id="rankTbl"><thead><tr><th>Rank</th><th>Title</th><th class="n">Group sales</th><th class="n">Active directs</th><th class="n">Min self-stake</th><th class="n">Override rate</th></tr></thead><tbody></tbody></table>
+    </div>
+    <p class="note" style="margin-top:14px">Thresholds are the <span class="sym">rankFor</span> ladder; the min self-stake is <span class="sym">minStakeForRank(r)</span>; the rate is <span class="sym">rateForRank(r) = r × 5%</span>. Group sales roll up the <strong>binary tree</strong>; the active-direct count is on your <strong>affiliate tree</strong>. An admin can <strong>assign a rank</strong> with <span class="sym">setRankFloor</span> — it <strong>overrides these rules</strong> (final rank = whichever is higher, natural or assigned) and earns even with no self-stake. The thresholds themselves (group volume, directs, min self-stake) are <strong>admin-tunable state</strong> via <span class="sym">setRankRequirement</span> — the promotion lever; the values shown are the current defaults.</p>
+  </div>
+</section>
+
+<!-- THE FORMULA + CALCULATOR -->
+<section id="formula">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">02 · The daily override</div>
+      <h2>A passive yield on each leg</h2>
+      <p>For each leg the contract computes a daily amount and lets it accrue over time — the volume can sit still and your earnings keep climbing every day. The formula, exactly as the contract runs it:</p>
+    </div>
+    <div class="card" style="margin-bottom:18px;text-align:center;background:var(--surface-2)">
+      <div style="font-family:var(--mono);font-size:clamp(13px,2.4vw,17px);line-height:2.1;color:var(--text)">
+        <span style="color:var(--accent)">daily</span> = legSales × <span style="color:var(--sky)">multiplier</span> × ( <span style="color:var(--amber)">yourRate</span> − downlineRate )
+      </div>
+      <div style="font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-top:8px">then <span class="sym">pending = daily × days since you ranked up or last claimed</span></div>
+    </div>
+    <div class="calc">
+      <div class="bar"><span class="led"></span><b>Override calculator — one leg</b></div>
+      <div class="ctrls">
+        <div class="field">
+          <label for="yourRank">Your rank</label>
+          <select id="yourRank"></select>
+        </div>
+        <div class="field">
+          <label for="dnRank">Strongest downline rank on this leg</label>
+          <select id="dnRank"></select>
+        </div>
+        <div class="field">
+          <label for="legVol">This leg's group sales (USDT)</label>
+          <input type="number" id="legVol" value="100000" min="0" step="1000" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label for="mult">Program daily multiplier</label>
+          <input type="range" id="mult" min="1" max="500" step="1" value="50">
+          <div class="rangeval" id="multVal"></div>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="ro amber"><div class="k">Achieved % (differential)</div><div class="v num" id="roDiff">—</div></div>
+        <div class="ro good"><div class="k">Daily override</div><div class="v num" id="roDaily">—</div></div>
+        <div class="ro sky"><div class="k">Monthly (30 days)</div><div class="v num" id="roMonthly">—</div></div>
+        <div class="ro"><div class="k">Status</div><div class="v" id="roStatus" style="font-size:16px">—</div></div>
+      </div>
+      <p class="note">Achieved % = your rate − the strongest downline's rate on that leg. Over a <strong>non-ranking leg</strong> it's your full rate. <strong>yourRate</strong> is your <em>earning</em> rank's rate — throttled by your self-stake, or lifted by an admin rank assignment (see §04). The <strong>multiplier</strong> is a program-set daily factor (the contract default is <strong>0.5%</strong>; the program tunes it to target a sustainable daily rate) — drag it to see the effect. You run the same math on your other leg, and claim each independently.</p>
+    </div>
+  </div>
+</section>
+
+<!-- BREAKAWAY -->
+<section id="breakaway">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">03 · Breakaway</div>
+      <h2>You earn as long as you're the higher rank</h2>
+      <p>Your override on a leg is a <strong>differential</strong> — your rate minus the strongest ranked leader below you. As your downline grows their own rank, your share of that leg narrows. When a downline <strong>reaches your rank</strong>, that leg's differential hits zero: it has <strong>broken away</strong>, and you stop earning new income from it. Income ends only this way — never through a demotion.</p>
+    </div>
+    <div class="cards g3">
+      <div class="card">
+        <h3><span class="ic">◆</span>Non-ranking leg → full rate</h3>
+        <p>A leg with no ranked leader below pays your <strong>entire</strong> rank rate. A rank-10 leader over a fresh leg earns the full 50% differential every day.</p>
+      </div>
+      <div class="card">
+        <h3><span class="ic" style="background:color-mix(in srgb,var(--amber) 16%,transparent);color:var(--amber)">◑</span>Downline ranks up → you narrow</h3>
+        <p>When a leader below reaches, say, rank 4 (20%), your differential drops to <strong>your rate − 20%</strong>. You keep everything you already accrued — only the forward rate changes.</p>
+      </div>
+      <div class="card">
+        <h3><span class="ic" style="background:color-mix(in srgb,var(--rose) 16%,transparent);color:var(--rose)">◯</span>Equal rank → breakaway</h3>
+        <p>When a downline matches your rank, that leg's differential is <strong>0</strong>. It breaks away for good. When <strong>both</strong> legs have broken away, your override income is zero — but your rank stays.</p>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h3 style="margin-bottom:12px">Watch a leg break away</h3>
+      <div class="ctrls" style="grid-template-columns:1fr">
+        <div class="field">
+          <label for="baRank">A downline leader on your leg climbs the ranks →</label>
+          <input type="range" id="baRank" min="0" max="10" step="1" value="0">
+          <div class="rangeval" id="baVal"></div>
+        </div>
+      </div>
+      <div class="readout" style="margin-top:14px">
+        <div class="ro amber"><div class="k">Your differential</div><div class="v num" id="baDiff">—</div></div>
+        <div class="ro good"><div class="k">Daily override on this leg</div><div class="v num" id="baDaily">—</div></div>
+        <div class="ro"><div class="k">Leg status</div><div class="v" id="baStatus" style="font-size:16px">—</div></div>
+      </div>
+      <p class="note">Fixed example: you are rank 8 (40%), the leg holds $5,000,000 in group sales, at the program's default multiplier. Slide the downline's rank up to 8 and the leg breaks away.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SAFETY NET -->
+<section id="safetynet">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">04 · The safety net</div>
+      <h2>You earn only while you're staked</h2>
+      <p>Rank and volume are kept forever — but <strong>earning is not automatic</strong>. Every stream (override, referral, and your own staking passive) pays <strong>only while you hold a live open position</strong>. This keeps income tied to real, committed capital.</p>
+    </div>
+    <div class="cards g2" style="align-items:start">
+      <div class="card">
+        <h3><span class="ic">◈</span>Live position required</h3>
+        <ul class="tick">
+          <li>You earn while <span class="sym">activeStake &gt; 0</span> (a live open position) — <strong>or</strong> the admin has assigned your rank (<span class="sym">rankFloor &gt; 0</span>).</li>
+          <li>Close your stake and override, referral, and passive all <strong>pause</strong> the same block — until you re-stake.</li>
+          <li>Reviving requires re-staking <strong>≥ your prior amount</strong> — you can't downgrade a lapsed stake back on.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3><span class="ic" style="background:color-mix(in srgb,var(--amber) 16%,transparent);color:var(--amber)">◑</span>Min self-stake throttles the rate</h3>
+        <ul class="tick">
+          <li>Each rank needs its <strong>min self-stake</strong> (the ladder in §01) to earn at that rate.</li>
+          <li>Withdraw below the floor and your <strong>earning rank re-prices down</strong> to the rank your remaining stake backs — the <em>title</em> is kept (monotonic), the earning isn't.</li>
+          <li><strong>Admin override:</strong> <span class="sym">setRankFloor</span> assigns a rank that beats the rules and earns even with no self-stake — final rank = <strong>max(natural, assigned)</strong>.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="note" style="margin-top:14px">The exact gate in the contract: <span class="sym">_dailyRate</span> returns 0 when <span class="sym">activeStake == 0 &amp;&amp; rankFloor == 0</span>, and otherwise prices you at <span class="sym">min( cached rank , max( stake-backed rank , rankFloor ) )</span>. The same live-stake test guards <span class="sym">claimPassive</span> / <span class="sym">releaseHeld</span> and the referral payout.</p>
+  </div>
+</section>
+
+<!-- CLAIM + NO DEMOTION -->
+<section id="claim">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">05 · Claiming &amp; keeping</div>
+      <h2>Two buttons, one rule: you never go backwards</h2>
+    </div>
+    <div class="cards g2" style="align-items:start">
+      <div class="card">
+        <h3>Claim each leg, then withdraw</h3>
+        <div class="flow">
+          <div class="node"><div class="t"><span class="ic2">1</span>Accrue</div><div class="d">Each leg's daily override piles up over the days, on stagnant volume.</div></div>
+          <div class="arr">→</div>
+          <div class="node"><div class="t"><span class="ic2">2</span>Claim</div><div class="d">Press the Left or Right claim button (<span class="sym">claimPassive</span>) to settle that leg into your held balance.</div></div>
+          <div class="arr">→</div>
+          <div class="node"><div class="t"><span class="ic2">3</span>Withdraw</div><div class="d"><span class="sym">releaseHeld</span> moves your held income to your withdrawable vault balance.</div></div>
+        </div>
+        <ul class="tick" style="margin-top:12px">
+          <li>Left and right accrue and claim <strong>independently</strong> — two claim buttons.</li>
+          <li>Claiming (or ranking up) resets that leg's day counter; whatever accrued is <strong>kept</strong>.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>No demotion, ever</h3>
+        <ul class="tick">
+          <li>Rank is a <strong>high-water mark</strong> — once you reach it you hold it forever, even if downline members restructure.</li>
+          <li>A downline <strong>unstaking never claws back</strong> your rank, your leg volume, or your accrued income.</li>
+          <li>Income only ever winds down through <strong>breakaway</strong>, reaching zero only once <strong>both legs</strong> have broken away.</li>
+          <li>Your accrued override is booked at the live rate — a later breakaway can <strong>never reduce</strong> what's already yours.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FUNDING / SAFETY -->
+<section id="funding">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">06 · Funding &amp; safety</div>
+      <h2>Backed by the pool, protected for members</h2>
+    </div>
+    <div class="cards g3">
+      <div class="card"><h3><span class="ic">◈</span>Pool-funded</h3><p>Every USDT stake routes a leadership slice into the override pool. Your claimed income is a <strong>backed balance</strong> in that pool until you withdraw it.</p></div>
+      <div class="card"><h3><span class="ic" style="background:color-mix(in srgb,var(--sky) 16%,transparent);color:var(--sky)">⛓</span>Binary genealogy</h3><p>Volume rolls up the <strong>binary tree</strong> (your two legs) via <span class="sym">recordStake</span>, depth-capped so no walk can be gassed out.</p></div>
+      <div class="card"><h3><span class="ic" style="background:color-mix(in srgb,var(--amber) 16%,transparent);color:var(--amber)">🛡</span>Never over-pays</h3><p>The breakaway tracker only ever tightens as a leg strengthens, so the contract can never pay a differential larger than you've truly earned.</p></div>
+    </div>
+    <p class="note" style="margin-top:14px">The override is a daily yield, so the program keeps the pool funded from staking's leadership slice; an admin sweep can never touch USDT owed to members' held balances. The multiplier is a tunable program parameter (<span class="sym">setOverrideMultiplier</span>, default 0.5%); the day length (<span class="sym">secondsPerDay</span> = 86,400) is <strong>immutable</strong> — fixed at deploy so it can never re-price un-settled income.</p>
+  </div>
+</section>
+
+<!-- CONTRACT MAP -->
+<section id="verify">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">07 · Parity check</div>
+      <h2>Every claim, mapped to the contract</h2>
+      <p>Verify this page against <code>leadership.sol</code>. Each rule resolves to a concrete field, function, or branch.</p>
+    </div>
+    <div class="tbl-wrap map">
+      <table id="mapTbl"><thead><tr><th>Rule in plain language</th><th>Where it lives in the contract</th><th class="n">Value</th></tr></thead><tbody></tbody></table>
+    </div>
+    <p class="note" style="margin-top:14px">The multiplier is a program-set daily factor; every other figure is a coded constant or formula. The override is written &amp; tested (59 passing leadership tests) and matches the deployed <span class="sym">leadership.sol</span>.</p>
+    <div>
+      <a class="xref" href="./staking-explainer.html">↔ Staking program explainer</a>
+      <a class="xref" href="./referral-explainer.html">↔ Referral program explainer</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">ORBIX Leadership Override — contract explainer · generated from <code>projects/orbix/contracts/leadership.sol</code>. Figures are contract defaults; the daily multiplier is a program parameter. Not financial advice.</div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var BPS=10000;
+  // rank ladder from rankFor + rateForRank
+  var RANKS=[
+    {r:1,name:"Associate",gv:1000,d:1,min:25},
+    {r:2,name:"Consultant",gv:2500,d:1,min:50},
+    {r:3,name:"Executive",gv:10000,d:1,min:100},
+    {r:4,name:"Director",gv:50000,d:1,min:500},
+    {r:5,name:"Senior Director",gv:200000,d:2,min:1000},
+    {r:6,name:"Regional President",gv:1000000,d:2,min:5000},
+    {r:7,name:"International President",gv:5000000,d:3,min:25000},
+    {r:8,name:"Global President",gv:25000000,d:3,min:100000},
+    {r:9,name:"Executive Chairman",gv:100000000,d:4,min:500000},
+    {r:10,name:"Founder's Circle",gv:500000000,d:5,min:2500000}
+  ];
+  var rate=function(r){return r*500;}; // bps
+  var $=function(s,r){return (r||document).querySelector(s);};
+  var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));};
+  var fmtUSD=function(n){var d=n<100?2:0; return "$"+ (Math.round(n*100)/100).toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d});};
+  var fmtBig=function(n){ if(n>=1e6)return "$"+(n/1e6)+"M"; if(n>=1e3)return "$"+(n/1e3).toLocaleString("en-US")+"K"; return "$"+n; };
+
+  $("#themeBtn").addEventListener("click",function(){
+    var cur=document.documentElement.getAttribute("data-theme");
+    if(!cur){cur=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}
+    document.documentElement.setAttribute("data-theme",cur==="dark"?"light":"dark");
+  });
+
+  /* rank table */
+  (function(){
+    var tb=$("#rankTbl tbody");
+    RANKS.forEach(function(x){
+      var tr=document.createElement("tr");
+      if(x.r===5) tr.className="hi";
+      tr.innerHTML='<td><span class="rk">R'+x.r+'</span></td><td>'+x.name+'</td><td class="n">'+fmtBig(x.gv)+'</td><td class="n">'+x.d+'</td><td class="n">'+fmtBig(x.min)+'</td><td class="n"><b>'+(x.r*5)+'%</b></td>';
+      tb.appendChild(tr);
+    });
+  })();
+
+  /* daily override formula: legVol * mult * (yourRate - dnRate) */
+  function dailyOverride(legVol, yourR, dnR, multBps){
+    var diff = rate(yourR) - rate(dnR); if(diff<0) diff=0;
+    return (legVol * multBps/BPS) * (diff/BPS);
+  }
+
+  /* populate rank selects */
+  function fillRankSelect(sel, allowZero, sel0){
+    sel.innerHTML="";
+    if(allowZero){ var o=document.createElement("option"); o.value=0; o.textContent="Unranked (0%)"; sel.appendChild(o); }
+    RANKS.forEach(function(x){ var o=document.createElement("option"); o.value=x.r; o.textContent="R"+x.r+" · "+x.name+" ("+(x.r*5)+"%)"; sel.appendChild(o); });
+    sel.value=sel0;
+  }
+  fillRankSelect($("#yourRank"),false,10);
+  fillRankSelect($("#dnRank"),true,0);
+
+  /* calculator */
+  function calc(){
+    var yourR=parseInt($("#yourRank").value,10);
+    var dnR=parseInt($("#dnRank").value,10);
+    var legVol=parseFloat($("#legVol").value)||0;
+    var multBps=parseInt($("#mult").value,10);
+    $("#multVal").textContent=(multBps/100)+"% per day  (multiplier)";
+    var diff=rate(yourR)-rate(dnR); if(diff<0)diff=0;
+    var daily=dailyOverride(legVol,yourR,dnR,multBps);
+    $("#roDiff").textContent=(diff/100)+"%";
+    $("#roDaily").textContent=fmtUSD(daily);
+    $("#roMonthly").textContent=fmtUSD(daily*30);
+    $("#roStatus").innerHTML = diff>0
+      ? '<span class="pill on">EARNING</span>'
+      : '<span class="pill off">BROKEN AWAY</span>';
+  }
+  ["#yourRank","#dnRank","#legVol","#mult"].forEach(function(id){
+    $(id).addEventListener("input",calc);
+    $(id).addEventListener("change",calc);
+  });
+  calc();
+
+  /* breakaway slider: you rank 8 (40%), leg $5,000,000, default mult 0.5% */
+  function ba(){
+    var dn=parseInt($("#baRank").value,10);
+    var yourR=8, legVol=5000000, multBps=50;
+    var diff=rate(yourR)-rate(dn); if(diff<0)diff=0;
+    var daily=dailyOverride(legVol,yourR,dn,multBps);
+    $("#baVal").textContent="Downline rank: R"+dn+"  ("+(dn*5)+"%)";
+    $("#baDiff").textContent=(diff/100)+"%";
+    $("#baDaily").textContent=fmtUSD(daily);
+    $("#baStatus").innerHTML = dn>=yourR
+      ? '<span class="pill off">BROKEN AWAY</span>'
+      : (dn>0 ? '<span class="pill on">NARROWED</span>' : '<span class="pill on">FULL RATE</span>');
+  }
+  $("#baRank").addEventListener("input",ba);
+  ba();
+
+  /* hero: rank 5, both legs illustrative */
+  (function(){
+    var yourR=5, mult=50;
+    $("#heroL").textContent=fmtUSD(dailyOverride(150000,yourR,0,mult));
+    $("#heroR").textContent=fmtUSD(dailyOverride(60000,yourR,2,mult));
+  })();
+
+  /* contract map */
+  (function(){
+    var rows=[
+      ["Ten ranks by group sales + directs","rankFor(gv, directs)","$1K…$500M · 1…5 directs"],
+      ["Per-rank minimum self-stake","minStakeForRank(r)","$25 … $2.5M"],
+      ["Override rate per rank","rateForRank(r) = r × 500","5% … 50%"],
+      ["Two legs (binary tree)","legVolume[member][LEFT|RIGHT]","L + R"],
+      ["Daily override per leg","legVolume × overrideMultiplier × differential","USDT / day"],
+      ["Achieved % is a differential","yourRate − legTopDownlineRate","0 when broken away"],
+      ["Program daily multiplier","overrideMultiplierBps","50 (0.5%) default, settable"],
+      ["Day length is fixed","secondsPerDay (immutable)","86400"],
+      ["Earn only while staked","_dailyRate: activeStake==0 && rankFloor==0 ⇒ 0","live position OR admin rank"],
+      ["Earning rank re-priced by stake","min(rank, max(stakeBackedRank, rankFloor))","min-stake throttle"],
+      ["Revive ≥ prior stake","staking: RESTAKE_TOO_LOW guard","no downgrade on revive"],
+      ["Accrues over time","pending = accrued + dailyRate × days","secondsPerDay = 86400"],
+      ["Claim per leg (two buttons)","claimPassive(leg) → heldIncomeOverride","LEFT / RIGHT"],
+      ["Withdraw held income","releaseHeld() → vault balance","override + referral"],
+      ["No demotion — rank is monotonic","_setRankSettle: newR ≤ oldR ignored","forever"],
+      ["Unstake never claws back downline","recordUnstake — no group-volume demotion","volume monotonic"],
+      ["Never over-pays","legTopDownlineRate only tightens","safe by construction"],
+      ["Admin-assign a rank (overrides rules)","setRankFloor(member, rank) — max(natural, assigned)","earns without self-stake"]
+    ];
+    var tb=$("#mapTbl tbody");
+    rows.forEach(function(r){
+      var tr=document.createElement("tr");
+      tr.innerHTML='<td>'+r[0]+'</td><td><span class="sym">'+r[1]+'</span></td><td class="n"><span class="mono">'+r[2]+'</span></td>';
+      tb.appendChild(tr);
+    });
+  })();
+})();
+</script>

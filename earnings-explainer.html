@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>How members earn on ORBIX</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#f4f7fa; --surface:#ffffff; --surface-2:#eef2f7; --line:#d9e2ec; --line-strong:#c3d0de;
+    --ink:#101a28; --muted:#54687e; --faint:#7c8da0;
+    --accent:#4f7a00; --accent-fill:#84c400; --accent-ink:#ffffff;
+    --trading:#3672d6; --buffer:#6f9e00; --liquidity:#0f9d8f; --profit:#c98016;
+    --pos:#2e8b3d; --warn:#b7791f;
+    --shadow:0 1px 2px rgba(16,26,40,.05), 0 8px 28px rgba(16,26,40,.06);
+  }
+  @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+    --bg:#0a0f17; --surface:#111a26; --surface-2:#0e1620; --line:#1e2a3a; --line-strong:#2b3a4e;
+    --ink:#e9f0f8; --muted:#93a4b9; --faint:#6c7f96;
+    --accent:#c6f24e; --accent-fill:#c6f24e; --accent-ink:#0a0f17;
+    --trading:#6ea8fe; --buffer:#c6f24e; --liquidity:#5fe0c6; --profit:#f5b971;
+    --pos:#7ee08a; --warn:#f0c05a;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 34px rgba(0,0,0,.4);
+  }}
+  :root[data-theme="dark"]{
+    --bg:#0a0f17; --surface:#111a26; --surface-2:#0e1620; --line:#1e2a3a; --line-strong:#2b3a4e;
+    --ink:#e9f0f8; --muted:#93a4b9; --faint:#6c7f96;
+    --accent:#c6f24e; --accent-fill:#c6f24e; --accent-ink:#0a0f17;
+    --trading:#6ea8fe; --buffer:#c6f24e; --liquidity:#5fe0c6; --profit:#f5b971;
+    --pos:#7ee08a; --warn:#f0c05a;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 34px rgba(0,0,0,.4);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:"IBM Plex Sans",system-ui,sans-serif; font-size:16px; line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:920px; margin:0 auto; padding:clamp(20px,5vw,64px) clamp(16px,4vw,40px) 80px}
+  h1,h2,h3{font-family:"Sora",system-ui,sans-serif; text-wrap:balance; margin:0}
+  .mono{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums}
+  .num{font-variant-numeric:tabular-nums}
+
+  /* header */
+  .eyebrow{font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--accent); font-weight:600}
+  header h1{font-size:clamp(30px,6vw,46px); font-weight:700; line-height:1.08; margin:14px 0 0; letter-spacing:-.02em}
+  .lede{color:var(--muted); font-size:clamp(16px,2.2vw,18px); margin:16px 0 0; max-width:60ch}
+  .assume{display:inline-flex; align-items:center; gap:10px; margin-top:22px; padding:9px 16px; border-radius:999px;
+    background:var(--surface); border:1px solid var(--line-strong); font-size:14px; box-shadow:var(--shadow)}
+  .assume b{color:var(--ink)} .assume .dot{width:8px;height:8px;border-radius:99px;background:var(--accent-fill)}
+
+  section{margin-top:56px}
+  .sec-head{display:flex; align-items:baseline; gap:14px; margin-bottom:20px; border-bottom:1px solid var(--line); padding-bottom:12px}
+  .sec-idx{font-family:"IBM Plex Mono",monospace; font-size:13px; color:var(--faint); font-weight:500}
+  .sec-head h2{font-size:clamp(20px,3.4vw,26px); font-weight:600; letter-spacing:-.01em}
+  .sec-head .tag{margin-left:auto; font-size:12.5px; color:var(--muted); font-family:"IBM Plex Mono",monospace}
+  p{margin:0 0 14px} .muted{color:var(--muted)}
+
+  .card{background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:22px; box-shadow:var(--shadow)}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+  @media(max-width:640px){.grid2{grid-template-columns:1fr}}
+
+  /* split bar */
+  .bar{display:flex; height:56px; border-radius:12px; overflow:hidden; border:1px solid var(--line-strong); margin:6px 0 18px}
+  .bar>div{display:flex; align-items:center; justify-content:center; color:#fff; font-family:"IBM Plex Mono",monospace; font-weight:600; font-size:14px; min-width:0}
+  .bar .s-trading{background:var(--trading)} .bar .s-buffer{background:var(--buffer); color:var(--accent-ink)}
+  .bar .s-liq{background:var(--liquidity); color:#06231f} .bar .s-profit{background:var(--profit); color:#3a2606}
+  .legend{display:flex; flex-wrap:wrap; gap:8px 20px; font-size:13.5px}
+  .legend span{display:inline-flex; align-items:center; gap:8px; color:var(--muted)}
+  .legend i{width:11px; height:11px; border-radius:3px; display:inline-block}
+
+  /* tables */
+  .tbl-wrap{overflow-x:auto; border:1px solid var(--line); border-radius:14px; background:var(--surface); box-shadow:var(--shadow)}
+  table{border-collapse:collapse; width:100%; font-size:14.5px}
+  th,td{text-align:right; padding:12px 16px; white-space:nowrap}
+  th:first-child,td:first-child{text-align:left}
+  thead th{font-family:"IBM Plex Mono",monospace; font-size:11.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:600; background:var(--surface-2); border-bottom:1px solid var(--line-strong)}
+  tbody tr{border-top:1px solid var(--line)} tbody tr:first-child{border-top:0}
+  tbody td{color:var(--ink)} td.dim{color:var(--muted)}
+  .pos{color:var(--pos); font-weight:600}
+  .accent{color:var(--accent); font-weight:600}
+  tr.hi td{background:color-mix(in srgb, var(--accent-fill) 12%, var(--surface))}
+
+  /* stat callouts */
+  .stats{display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
+  @media(max-width:640px){.stats{grid-template-columns:1fr}}
+  .stat{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px 18px 16px; box-shadow:var(--shadow)}
+  .stat .k{font-size:12.5px; color:var(--muted); font-family:"IBM Plex Mono",monospace; letter-spacing:.04em}
+  .stat .v{font-family:"Sora",sans-serif; font-weight:700; font-size:clamp(24px,4vw,30px); letter-spacing:-.02em; margin-top:6px; font-variant-numeric:tabular-nums}
+  .stat .u{font-size:13px; color:var(--muted); margin-top:2px}
+  .stat.big .v{color:var(--accent)}
+
+  .note{display:flex; gap:12px; padding:14px 16px; border-radius:12px; background:var(--surface-2); border:1px solid var(--line); font-size:14px; color:var(--muted); margin-top:16px}
+  .note b{color:var(--ink)}
+  .note .m{flex:none; color:var(--accent)}
+  code{font-family:"IBM Plex Mono",monospace; background:var(--surface-2); border:1px solid var(--line); border-radius:6px; padding:1px 6px; font-size:.9em; color:var(--ink)}
+  .streamrow{display:flex; align-items:center; gap:14px; padding:14px 0; border-top:1px solid var(--line)}
+  .streamrow:first-child{border-top:0}
+  .chip{flex:none; width:34px; height:34px; border-radius:10px; display:grid; place-items:center; font-family:"Sora",sans-serif; font-weight:700; font-size:15px; color:#fff}
+  .streamrow p{margin:0}
+  footer{margin-top:64px; padding-top:20px; border-top:1px solid var(--line); color:var(--faint); font-size:13px}
+  footer p{margin:0 0 8px}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">ORBIX · Income Model</div>
+    <h1>How members earn on ORBIX</h1>
+    <p class="lede">Three income streams, straight from the live contracts — what a stake pays out, what referrals pay, and what the binary override pays leaders. Every figure below is computed from the deployed parameters.</p>
+    <div class="assume"><span class="dot"></span>Assumption for this walkthrough: <b>&nbsp;every member stakes 1,000 USDT</b></div>
+  </header>
+
+  <!-- three streams overview -->
+  <section>
+    <div class="sec-head"><span class="sec-idx">A</span><h2>The three ways you earn</h2></div>
+    <div class="card">
+      <div class="streamrow">
+        <span class="chip" style="background:var(--liquidity)">1</span>
+        <p><b>Staking passive</b> — your own stake pays you a daily USDT yield, and returns your ORBIX principal after the lock. <span class="muted">Paid to every staker.</span></p>
+      </div>
+      <div class="streamrow">
+        <span class="chip" style="background:var(--profit)">2</span>
+        <p><b>Referral</b> — a flat unilevel bonus (5% direct + 1% for five more levels) each time someone in your sponsor line stakes. <span class="muted">Paid from the buffer.</span></p>
+      </div>
+      <div class="streamrow">
+        <span class="chip" style="background:var(--accent-fill); color:var(--accent-ink)">3</span>
+        <p><b>Override</b> — a daily two-leg passive on your binary group volume, scaled by your rank. <span class="muted">The leadership income; paid from the buffer.</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- split -->
+  <section>
+    <div class="sec-head"><span class="sec-idx">B</span><h2>Where each 1,000 USDT goes</h2><span class="tag">on every stake</span></div>
+    <p class="muted">Before anyone earns, each staked 1,000 USDT is split four ways. The <b style="color:var(--ink)">buffer</b> (35%) is what funds the referral + override payouts; the <b style="color:var(--ink)">trading</b> allocation (40%) generates the yield that keeps the buffer topped up.</p>
+    <div class="bar" aria-label="Allocation of a 1000 USDT stake">
+      <div class="s-trading" style="flex:40">40%</div>
+      <div class="s-buffer" style="flex:35">35%</div>
+      <div class="s-liq" style="flex:10">10%</div>
+      <div class="s-profit" style="flex:15">15%</div>
+    </div>
+    <div class="legend">
+      <span><i style="background:var(--trading)"></i><b style="color:var(--ink)">Trading&nbsp;400</b> — traders leverage it to generate the passive</span>
+      <span><i style="background:var(--buffer)"></i><b style="color:var(--ink)">Buffer&nbsp;350</b> — 250 override + 100 referral reserve</span>
+      <span><i style="background:var(--liquidity)"></i><b style="color:var(--ink)">Liquidity&nbsp;100</b> — added to the LP</span>
+      <span><i style="background:var(--profit)"></i><b style="color:var(--ink)">Profit&nbsp;150</b> — company</span>
+    </div>
+  </section>
+
+  <!-- stream 1 -->
+  <section>
+    <div class="sec-head"><span class="sec-idx">1</span><h2>Your staking return</h2><span class="tag">per 1,000 USDT staked</span></div>
+    <p class="muted">You receive a <b style="color:var(--ink)">fixed 100,000 ORBIX principal</b> (at 100 ORBIX/USDT) — returned to you 2.5% every 30 days over 40 months once the lock ends. On top of that you earn a daily <b style="color:var(--ink)">passive USDT yield</b> on the staked value, claimable any time, frozen when the lock ends:</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Tier</th><th>Rate</th><th>Per day</th><th>Per month</th><th>Lock</th><th>Total passive</th><th>Return</th></tr></thead>
+        <tbody>
+          <tr><td>Starter</td><td class="dim mono">0.33%/day</td><td class="mono">3.30</td><td class="mono">99.00</td><td class="dim">12 mo</td><td class="mono pos">1,188</td><td class="mono accent">118.8%</td></tr>
+          <tr><td>Growth</td><td class="dim mono">0.40%/day</td><td class="mono">4.00</td><td class="mono">120.00</td><td class="dim">10 mo</td><td class="mono pos">1,200</td><td class="mono accent">120%</td></tr>
+          <tr><td>Institutional</td><td class="dim mono">0.50%/day</td><td class="mono">5.00</td><td class="mono">150.00</td><td class="dim">8 mo</td><td class="mono pos">1,200</td><td class="mono accent">120%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note"><span class="m">◆</span><div>All USDT figures are on the 1,000 staked. Passive stops accruing at the lock end; the <b>100,000 ORBIX principal</b> then drips back at <b>2,500 ORBIX / month</b> for 40 months. Passive claims pay up to the vault's USDT surplus.</div></div>
+  </section>
+
+  <!-- stream 2 -->
+  <section>
+    <div class="sec-head"><span class="sec-idx">2</span><h2>Referral income</h2><span class="tag">per downline's 1,000 stake</span></div>
+    <p class="muted">Each time someone in your sponsor line stakes 1,000 USDT, a flat bonus is paid up six levels. It's one-time per stake — it stacks as your team stakes.</p>
+    <div class="grid2">
+      <div class="tbl-wrap" style="box-shadow:none">
+        <table>
+          <thead><tr><th>Level</th><th>Rate</th><th>You earn</th></tr></thead>
+          <tbody>
+            <tr class="hi"><td>1 — Direct</td><td class="dim mono">5%</td><td class="mono pos">50.00</td></tr>
+            <tr><td>2</td><td class="dim mono">1%</td><td class="mono">10.00</td></tr>
+            <tr><td>3</td><td class="dim mono">1%</td><td class="mono">10.00</td></tr>
+            <tr><td>4</td><td class="dim mono">1%</td><td class="mono">10.00</td></tr>
+            <tr><td>5</td><td class="dim mono">1%</td><td class="mono">10.00</td></tr>
+            <tr><td>6</td><td class="dim mono">1%</td><td class="mono">10.00</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card" style="display:flex; flex-direction:column; justify-content:center; gap:14px">
+        <div>
+          <div class="eyebrow" style="color:var(--muted)">Quick math</div>
+          <p style="margin:8px 0 0"><b>5 directs</b> each stake 1,000 → you earn <b class="accent mono">250 USDT</b> (5 × 50).</p>
+        </div>
+        <div style="height:1px; background:var(--line)"></div>
+        <p class="muted" style="margin:0; font-size:14px">Total distributed per stake = <b style="color:var(--ink)">100 USDT (10%)</b> — exactly the referral reserve inside the 35% buffer, so referral is fully self-funded.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- stream 3 -->
+  <section>
+    <div class="sec-head"><span class="sec-idx">3</span><h2>Override — the leadership income</h2><span class="tag">daily, two legs</span></div>
+    <p class="muted">Your binary tree has a LEFT and a RIGHT leg. Each pays a <b style="color:var(--ink)">daily</b> passive on that leg's group volume, set by the formula:</p>
+    <div class="card" style="text-align:center; padding:26px">
+      <div class="mono" style="font-size:clamp(14px,2.6vw,17px); line-height:1.9">
+        daily<span class="muted">(leg)</span> = legVolume × <b class="accent">0.5%</b><span class="muted"> multiplier</span> × ( yourRate − topDownlineRate )
+      </div>
+      <p class="muted" style="margin:14px 0 0; font-size:13.5px">yourRate = rank × 5% · the “− topDownlineRate” is the <b style="color:var(--ink)">breakaway differential</b>: you earn on the gap between your rank and your strongest downline's rank.</p>
+    </div>
+
+    <h3 style="font-size:16px; margin:28px 0 12px; font-weight:600">The rank ladder</h3>
+    <p class="muted" style="margin:0 0 12px; font-size:13.5px">To HOLD a rank you need <b style="color:var(--ink)">all three</b>: the qualifying group volume, the direct count, AND the per-rank <b style="color:var(--ink)">min self-stake</b> (your own open stake). <b style="color:var(--ink)">Your rate</b> = rank × 5%. The <b style="color:var(--ink)">override / day</b> is that row's own qualifying volume run through <code>vol × 0.005 × rate</code> — the max daily override the group generates at that rank.</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Rank</th><th>Title</th><th>Qualifying volume</th><th>= members</th><th>Directs</th><th>Min self-stake</th><th>Your rate</th><th>Override / day <span class="dim" style="font-weight:400">(max)</span><br><span class="dim" style="font-weight:400">vol × 0.005 × rate</span></th></tr></thead>
+        <tbody>
+          <tr><td class="mono">1</td><td>Associate</td><td class="mono dim">1,000</td><td class="mono dim">1</td><td class="mono dim">1</td><td class="mono">25</td><td class="mono">5%</td><td class="mono">0.25</td></tr>
+          <tr><td class="mono">2</td><td>Consultant</td><td class="mono dim">2,500</td><td class="mono dim">3</td><td class="mono dim">1</td><td class="mono">50</td><td class="mono">10%</td><td class="mono">1.25</td></tr>
+          <tr><td class="mono">3</td><td>Executive</td><td class="mono dim">10,000</td><td class="mono dim">10</td><td class="mono dim">1</td><td class="mono">100</td><td class="mono">15%</td><td class="mono">7.50</td></tr>
+          <tr><td class="mono">4</td><td>Director</td><td class="mono dim">50,000</td><td class="mono dim">50</td><td class="mono dim">1</td><td class="mono">500</td><td class="mono">20%</td><td class="mono">50</td></tr>
+          <tr class="hi"><td class="mono">5</td><td>Senior Director</td><td class="mono dim">200,000</td><td class="mono dim">200</td><td class="mono dim">2</td><td class="mono">1,000</td><td class="mono">25%</td><td class="mono">250</td></tr>
+          <tr><td class="mono">6</td><td>Regional President</td><td class="mono dim">1,000,000</td><td class="mono dim">1,000</td><td class="mono dim">2</td><td class="mono">5,000</td><td class="mono">30%</td><td class="mono">1,500</td></tr>
+          <tr><td class="mono">7</td><td>Int'l President</td><td class="mono dim">5,000,000</td><td class="mono dim">5,000</td><td class="mono dim">3</td><td class="mono">25,000</td><td class="mono">35%</td><td class="mono">8,750</td></tr>
+          <tr><td class="mono">8</td><td>Global President</td><td class="mono dim">25,000,000</td><td class="mono dim">25,000</td><td class="mono dim">3</td><td class="mono">100,000</td><td class="mono">40%</td><td class="mono">50,000</td></tr>
+          <tr><td class="mono">9</td><td>Executive Chairman</td><td class="mono dim">100,000,000</td><td class="mono dim">100,000</td><td class="mono dim">4</td><td class="mono">500,000</td><td class="mono">45%</td><td class="mono">225,000</td></tr>
+          <tr><td class="mono">10</td><td>Founder's Circle</td><td class="mono dim">500,000,000</td><td class="mono dim">500,000</td><td class="mono dim">5</td><td class="mono">2,500,000</td><td class="mono">50%</td><td class="mono">1,250,000</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note"><span class="m">◆</span><div>Read a row straight across: <code>Associate → 1,000 × 0.005 × 0.05 = 0.25 / day</code>; <code>Founder's Circle → 500,000,000 × 0.005 × 0.50 = 1,250,000 / day</code>. This is the <b>max</b> (full differential — no downline has ranked up yet). As downlines rank up the differential shrinks; when one reaches your rank that leg <b>breaks away</b> to zero, so real override sits below this.</div></div>
+
+    <div class="note" style="border-color:color-mix(in srgb, var(--warn, #b7791f) 45%, var(--line)); background:color-mix(in srgb, var(--warn, #b7791f) 8%, var(--surface))"><span class="m" style="color:var(--warn, #b7791f)">▲</span><div><b style="color:var(--ink)">What you must MAINTAIN to earn — the safety net (applies to all three streams).</b> Your override, referral, and passive all pay <b>only while you hold a live open position</b>: close your stake and every stream pauses until you re-stake (and a revive must be <b>≥ your prior stake</b>). Your <b>min self-stake</b> gates your earning rank — withdraw below the floor for your rank and earning re-prices down to the rank your remaining stake backs (the title is kept, monotonic). One override: an <b>admin can assign your rank directly</b>, which beats the rules and earns even with no self-stake — your final rank is <b>whichever is higher</b>, the naturally-earned rank or the admin-assigned one.</div></div>
+  </section>
+
+  <!-- worked example -->
+  <section>
+    <div class="sec-head"><span class="sec-idx">E</span><h2>Worked example — a Senior Director</h2><span class="tag">Rank 5 · 25%</span></div>
+    <p class="muted">You're Rank 5 with <b style="color:var(--ink)">200 members</b> in your group (200,000 USDT volume), split evenly — 100,000 on each leg — and you staked 1,000 yourself (Starter). That 1,000 <b style="color:var(--ink)">also meets the rank-5 min self-stake floor</b>, so your position is live and you actually earn at rank 5. Here's your monthly income across all three streams:</p>
+
+    <div class="stats" style="margin-bottom:18px">
+      <div class="stat"><div class="k">STREAM 1 · your passive</div><div class="v">99</div><div class="u">USDT / month (on your 1,000)</div></div>
+      <div class="stat"><div class="k">STREAM 2 · referral</div><div class="v">250</div><div class="u">USDT · e.g. 5 directs newly stake</div></div>
+      <div class="stat big"><div class="k">STREAM 3 · override</div><div class="v">3,000</div><div class="u">USDT / month (realistic)</div></div>
+    </div>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Override scenario</th><th>Differential</th><th>Per leg / day</th><th>Both legs / day</th><th>Per month</th></tr></thead>
+        <tbody>
+          <tr><td>Fresh legs — no ranked downline</td><td class="dim mono">25% (full)</td><td class="mono">125</td><td class="mono">250</td><td class="mono pos">7,500</td></tr>
+          <tr class="hi"><td>Realistic — best downline is Rank 3</td><td class="dim mono">25% − 15% = 10%</td><td class="mono">50</td><td class="mono">100</td><td class="mono pos">3,000</td></tr>
+          <tr><td>Mature — best downline is Rank 4</td><td class="dim mono">25% − 20% = 5%</td><td class="mono">25</td><td class="mono">50</td><td class="mono">1,500</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note"><span class="m">◆</span><div>The <b>override still leads the streams</b> for a ranked leader — it's the engine of leadership income, scaling with team volume and your rank differential. The <b>0.5% multiplier is the throttle</b>: raise or lower it as trading revenue allows. Passive + referral are steady; override grows with the org and winds down through breakaway.</div></div>
+  </section>
+
+  <footer>
+    <p><b style="color:var(--muted)">Live parameters (anvil testnet):</b> productRate 100 ORBIX/USDT · tiers 0.33% / 0.40% / 0.50% per day at 12 / 10 / 8-month locks · principal vesting 2.5% / 30 days × 40 · override multiplier 0.5% · referral 5% direct + 1% × 5 levels · rank requires min self-stake (25…2.5M) · earn only while your position is live · admin rank assignment overrides the rules (max of natural / assigned) · day clock 86,400s (real).</p>
+    <p>Override + referral are paid from the leadership buffer via claim → release; passive is claimed from the vault USDT surplus. Buffer solvency is backstopped by the 40% trading allocation. Figures are gross of the buffer's funding state — a claim pays only what the pool/surplus can currently back.</p>
+  </footer>
+</div>
+</body>
+</html>

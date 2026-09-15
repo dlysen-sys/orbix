@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ORBIX override &amp; referral — contract blueprint</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#f4f7fa; --surface:#ffffff; --surface-2:#eef2f7; --code-bg:#0f1826; --code-ink:#dbe6f2;
+    --line:#d9e2ec; --line-strong:#c3d0de; --ink:#101a28; --muted:#54687e; --faint:#7c8da0;
+    --accent:#4f7a00; --accent-fill:#84c400; --lime:#6f9e00;
+    --req:#b7791f; --req-bg:#fdf6e9; --req-line:#e6cf9a;
+    --flow:#3672d6; --why:#2e7d5b; --crit:#c8412f;
+    --shadow:0 1px 2px rgba(16,26,40,.05), 0 8px 28px rgba(16,26,40,.06);
+  }
+  @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+    --bg:#0a0f17; --surface:#111a26; --surface-2:#0e1620; --code-bg:#0a121e; --code-ink:#cfe0f2;
+    --line:#1e2a3a; --line-strong:#2b3a4e; --ink:#e9f0f8; --muted:#93a4b9; --faint:#6c7f96;
+    --accent:#c6f24e; --accent-fill:#c6f24e; --lime:#c6f24e;
+    --req:#f0c05a; --req-bg:#201a0e; --req-line:#4a3d1e;
+    --flow:#6ea8fe; --why:#7ee0a8; --crit:#ff7a68;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 34px rgba(0,0,0,.4);
+  }}
+  :root[data-theme="dark"]{
+    --bg:#0a0f17; --surface:#111a26; --surface-2:#0e1620; --code-bg:#0a121e; --code-ink:#cfe0f2;
+    --line:#1e2a3a; --line-strong:#2b3a4e; --ink:#e9f0f8; --muted:#93a4b9; --faint:#6c7f96;
+    --accent:#c6f24e; --accent-fill:#c6f24e; --lime:#c6f24e;
+    --req:#f0c05a; --req-bg:#201a0e; --req-line:#4a3d1e;
+    --flow:#6ea8fe; --why:#7ee0a8; --crit:#ff7a68;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 34px rgba(0,0,0,.4);
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--bg); color:var(--ink); font-family:"IBM Plex Sans",system-ui,sans-serif; font-size:16px; line-height:1.62; -webkit-font-smoothing:antialiased}
+  .wrap{max-width:940px; margin:0 auto; padding:clamp(20px,5vw,64px) clamp(15px,4vw,40px) 90px}
+  h1,h2,h3{font-family:"Sora",system-ui,sans-serif; text-wrap:balance; margin:0}
+  .mono{font-family:"IBM Plex Mono",monospace}
+  .eyebrow{font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.18em; text-transform:uppercase; color:var(--accent); font-weight:600}
+  header h1{font-size:clamp(29px,6vw,44px); font-weight:700; line-height:1.06; margin:14px 0 0; letter-spacing:-.02em}
+  .lede{color:var(--muted); font-size:clamp(15.5px,2.2vw,18px); margin:15px 0 0; max-width:64ch}
+  .src{display:flex; flex-wrap:wrap; gap:8px; margin-top:22px}
+  .src span{font-family:"IBM Plex Mono",monospace; font-size:12.5px; padding:6px 12px; border-radius:8px; background:var(--surface); border:1px solid var(--line-strong); box-shadow:var(--shadow)}
+  .src b{color:var(--accent)}
+
+  /* legend */
+  .legend{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:30px 0 0}
+  @media(max-width:720px){.legend{grid-template-columns:repeat(2,1fr)}}
+  .lg{padding:11px 13px; border-radius:11px; background:var(--surface); border:1px solid var(--line); font-size:12.5px; box-shadow:var(--shadow)}
+  .lg .t{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase; font-weight:600; margin-bottom:3px}
+  .lg.req .t{color:var(--req)} .lg.code .t{color:var(--lime)} .lg.flow .t{color:var(--flow)} .lg.why .t{color:var(--why)}
+  .lg .d{color:var(--muted)}
+
+  section{margin-top:52px}
+  .sec-head{display:flex; align-items:baseline; gap:14px; margin-bottom:8px; border-bottom:1px solid var(--line); padding-bottom:12px}
+  .sec-idx{font-family:"IBM Plex Mono",monospace; font-size:22px; color:var(--accent); font-weight:700}
+  .sec-head h2{font-size:clamp(20px,3.4vw,27px); font-weight:600; letter-spacing:-.01em}
+  .sec-head .tag{margin-left:auto; font-size:12px; color:var(--muted); font-family:"IBM Plex Mono",monospace; text-align:right}
+  .intro{color:var(--muted); margin:16px 0 4px}
+  p{margin:0 0 13px} .muted{color:var(--muted)}
+
+  h3.blk{font-size:16.5px; font-weight:600; margin:30px 0 12px; display:flex; align-items:center; gap:10px}
+  h3.blk .n{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--faint); border:1px solid var(--line-strong); border-radius:6px; padding:2px 7px}
+
+  /* requirement callout — the highlighted "rule that is enforced" */
+  .req{border:1px solid var(--req-line); background:var(--req-bg); border-left:4px solid var(--req); border-radius:12px; padding:15px 17px; margin:14px 0; box-shadow:var(--shadow)}
+  .req .lab{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--req); font-weight:600; display:flex; align-items:center; gap:8px}
+  .req .lab .dot{width:7px;height:7px;border-radius:2px;background:var(--req)}
+  .req .txt{margin-top:7px; color:var(--ink)} .req .txt b{color:var(--ink)}
+  .req .where{font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--req); margin-top:8px; opacity:.9}
+
+  /* code block — the actual source */
+  .code{background:var(--code-bg); border:1px solid var(--line-strong); border-radius:12px; margin:14px 0; box-shadow:var(--shadow); overflow:hidden}
+  .code .cap{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 14px; border-bottom:1px solid rgba(255,255,255,.07); background:rgba(255,255,255,.02)}
+  .code .cap .fn{font-family:"IBM Plex Mono",monospace; font-size:12.5px; color:var(--accent-fill); font-weight:600}
+  .code .cap .loc{font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:#7c93ab}
+  .code pre{margin:0; padding:14px 16px; overflow-x:auto; font-family:"IBM Plex Mono",monospace; font-size:13px; line-height:1.7; color:var(--code-ink)}
+  .code pre .c{color:#6d829b}      /* comment */
+  .code pre .k{color:#c6f24e}      /* keyword/accent */
+  .code pre .s{color:#e0a35e}      /* string/number */
+  .code pre .g{color:#ff9d8a}      /* guard/require */
+
+  /* processing flow — numbered steps of HOW the result is produced */
+  .flow{margin:16px 0}
+  .flow .step{display:flex; gap:14px; padding:12px 0; border-top:1px solid var(--line)}
+  .flow .step:first-child{border-top:0}
+  .flow .num{flex:none; width:26px; height:26px; border-radius:8px; background:color-mix(in srgb,var(--flow) 16%,transparent); color:var(--flow); font-family:"IBM Plex Mono",monospace; font-weight:600; font-size:13px; display:flex; align-items:center; justify-content:center; margin-top:1px}
+  .flow .body{flex:1}
+  .flow .body .h{font-weight:600; font-size:14.5px}
+  .flow .body .h code{font-family:"IBM Plex Mono",monospace; font-size:12.5px; color:var(--lime); background:var(--surface-2); border:1px solid var(--line); border-radius:5px; padding:1px 6px}
+  .flow .body .d{color:var(--muted); font-size:14px; margin-top:2px}
+
+  .why{display:flex; gap:11px; padding:12px 15px; border-radius:11px; background:color-mix(in srgb,var(--why) 8%,var(--surface)); border:1px solid color-mix(in srgb,var(--why) 30%,var(--line)); font-size:13.5px; color:var(--muted); margin:14px 0}
+  .why .lab{flex:none; font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--why); font-weight:600}
+  .why b{color:var(--ink)}
+
+  .eq{background:var(--surface); border:1px solid var(--line-strong); border-radius:12px; padding:18px; margin:14px 0; text-align:center; font-family:"IBM Plex Mono",monospace; font-size:clamp(13px,2.5vw,16px); line-height:1.9; box-shadow:var(--shadow); overflow-x:auto}
+  .eq b{color:var(--accent)} .eq .dim{color:var(--muted)}
+
+  .tbl-wrap{overflow-x:auto; border:1px solid var(--line); border-radius:12px; background:var(--surface); box-shadow:var(--shadow); margin:14px 0}
+  table{border-collapse:collapse; width:100%; font-size:13.5px}
+  th,td{text-align:right; padding:9px 14px; white-space:nowrap; font-variant-numeric:tabular-nums}
+  th:first-child,td:first-child{text-align:left}
+  thead th{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); font-weight:600; background:var(--surface-2); border-bottom:1px solid var(--line-strong)}
+  tbody tr{border-top:1px solid var(--line)} tbody tr:first-child{border-top:0}
+  td.mono,.dim{font-family:"IBM Plex Mono",monospace}
+  .dim{color:var(--muted)}
+  code.inl{font-family:"IBM Plex Mono",monospace; font-size:.88em; background:var(--surface-2); border:1px solid var(--line); border-radius:5px; padding:1px 6px; color:var(--ink)}
+  footer{margin-top:64px; padding-top:20px; border-top:1px solid var(--line); color:var(--faint); font-size:13px}
+  footer p{margin:0 0 8px} footer b{color:var(--muted)}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">ORBIX · Contract Blueprint</div>
+    <h1>Override &amp; Referral — how the code actually works</h1>
+    <p class="lede">Not a results page. This is the <b style="color:var(--ink)">blueprint of the on-chain logic</b> — the exact rules the contracts enforce and the step-by-step way each payout is produced. Every rule below is quoted from the source; the single sources of truth are <span class="mono">leadership.sol</span> and <span class="mono">staking.sol</span>.</p>
+    <div class="src">
+      <span>leadership <b>0x9Fe6…3a6e</b></span>
+      <span>staking <b>0x7023…ce2b</b></span>
+      <span>chainId <b>31337</b></span>
+    </div>
+    <div class="legend">
+      <div class="lg req"><div class="t">◆ Requirement</div><div class="d">A rule the contract enforces — the gate, not the outcome.</div></div>
+      <div class="lg code"><div class="t">&lt;/&gt; Source</div><div class="d">The real code that enforces it, with its function + line.</div></div>
+      <div class="lg flow"><div class="t">→ Processing</div><div class="d">How the result is produced, step by step.</div></div>
+      <div class="lg why"><div class="t">? Reason</div><div class="d">Why it is done this way.</div></div>
+    </div>
+  </header>
+
+  <!-- ================= A · FUNDING ================= -->
+  <section>
+    <div class="sec-head"><span class="sec-idx">A</span><h2>Funding — where the payout money comes from</h2><span class="tag">staking.sol<br>_routeStakeUsdt</span></div>
+    <p class="intro">Before anyone earns, every USDT stake is split four ways. Override + referral are both paid from one pool — the <b style="color:var(--ink)">leadership pool (the buffer)</b>. It is funded at stake time, so payouts are pre-financed, not minted.</p>
+
+    <div class="req">
+      <div class="lab"><span class="dot"></span>Requirement · pool is funded per stake</div>
+      <div class="txt">Each stake routes <b>leadershipBps + referralReserveBps</b> of its USDT into the leadership pool (the buffer that backs both override and referral), <b>tradingBps</b> to the trading wallet, <b>stakeLiquidityBps</b> to LP/buffer, and the remainder to profit. The four shares plus the referral reserve can never exceed 100%.</div>
+      <div class="where">enforced in _routeStakeUsdt (staking.sol:683) · invariant in setStakeConfig</div>
+    </div>
+
+    <div class="code">
+      <div class="cap"><span class="fn">_routeStakeUsdt(lp, usdtAmount)</span><span class="loc">staking.sol:683</span></div>
+<pre><span class="c">// referral reserve is read LIVE from the leadership module, then clamped to the remaining budget</span>
+uint256 refReserve = leadershipBps &gt; 0 ? _referralReserveBps() : 0;
+uint256 budget = BPS - leadershipBps - stakeLiquidityBps - tradingBps;
+<span class="g">if</span> (refReserve &gt; budget) refReserve = budget;              <span class="c">// can never push the split &gt; 100%</span>
+uint256 toLead = (usdtAmount * (leadershipBps + refReserve)) / BPS; <span class="c">// → the BUFFER pool (override + referral)</span>
+uint256 toTrading = (usdtAmount * tradingBps) / BPS;               <span class="c">// → trading capital (generates the yield)</span>
+uint256 toLp = (usdtAmount * stakeLiquidityBps) / BPS;
+<span class="k">if</span> (toLead &gt; 0) assets.creditBalance(<span class="k">address</span>(leadership), USDT, toLead);
+uint256 toProfit = usdtAmount - toLead - toTrading - toLp;         <span class="c">// remainder → profit</span></pre>
+    </div>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Share (live config)</th><th>bps</th><th>%</th><th>Destination</th></tr></thead>
+        <tbody>
+          <tr><td>tradingBps</td><td class="mono">4000</td><td class="mono">40%</td><td class="dim">trading wallet → yield engine</td></tr>
+          <tr><td>leadershipBps</td><td class="mono">2500</td><td class="mono">25%</td><td class="dim">leadership pool (override)</td></tr>
+          <tr><td>referralReserveBps</td><td class="mono">1000</td><td class="mono">10%</td><td class="dim">same pool (referral, self-funded)</td></tr>
+          <tr><td>stakeLiquidityBps</td><td class="mono">1000</td><td class="mono">10%</td><td class="dim">LP (or buffer if LP unset)</td></tr>
+          <tr><td>remainder</td><td class="mono">1500</td><td class="mono">15%</td><td class="dim">profit wallet</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="why"><span class="lab">? Reason</span><div>The referral reserve lives on the <b>separately-governed</b> leadership module, so staking reads it live and <b>clamps</b> it to the leftover budget — a later <code class="inl">setReferralPlan</code> raise can never underflow the split and brick staking. The pool being pre-funded is why a claim is just a ledger move, never a mint.</div></div>
+  </section>
+
+  <!-- ================= B · OVERRIDE ================= -->
+  <section>
+    <div class="sec-head"><span class="sec-idx">B</span><h2>Override — the two-leg breakaway passive</h2><span class="tag">leadership.sol<br>_dailyRate / recordStake</span></div>
+    <p class="intro">A member has a LEFT and a RIGHT leg (their two children in the binary tree). Each leg pays a <b style="color:var(--ink)">daily</b> rate on that leg's group volume. This is the core formula the whole module exists to compute:</p>
+
+    <div class="eq">daily<span class="dim">(leg)</span> = legVolume <span class="dim">×</span> <b>overrideMultiplier</b> <span class="dim">×</span> ( <b>yourRate</b> <span class="dim">−</span> <b>topDownlineRate</b> )</div>
+
+    <div class="code">
+      <div class="cap"><span class="fn">_dailyRate(m, leg)</span><span class="loc">leadership.sol:312</span></div>
+<pre><span class="g">if</span> (aStake == 0 &amp;&amp; rFloor == 0) <span class="k">return</span> 0;      <span class="c">// GATE 1 — liveness</span>
+uint256 vol = legVolume[m][leg];
+uint256 mult = overrideMultiplierBps;
+<span class="g">if</span> (vol == 0 || mult == 0) <span class="k">return</span> 0;         <span class="c">// GATE 2 — no volume / multiplier off</span>
+uint8 cap  = _highestRankForStake(aStake);        <span class="c">// rank your SELF-STAKE backs (the rule)</span>
+uint8 allow = cap &gt; rFloor ? cap : rFloor;         <span class="c">// …OR the admin-assigned rank (override)</span>
+uint8 rk = rank[m];
+uint256 myRate = rateForRank(rk &lt;= allow ? rk : allow);  <span class="c">// GATE 3 — earning rank</span>
+uint256 top = legTopDownlineRate[m][leg];
+<span class="g">if</span> (myRate &lt;= top) <span class="k">return</span> 0;                  <span class="c">// GATE 4 — broken away</span>
+<span class="k">return</span> ((vol * mult) / BPS) * (myRate - top) / BPS;</pre>
+    </div>
+
+    <h3 class="blk"><span class="n">B1</span>The four gates — what must be true to earn</h3>
+
+    <div class="req">
+      <div class="lab"><span class="dot"></span>Requirement · liveness (the safety net)</div>
+      <div class="txt">You earn override <b>only while you hold a live self-stake</b> (<code class="inl">activeStake &gt; 0</code>) <b>or</b> the admin has assigned you a rank (<code class="inl">rankFloor &gt; 0</code>). Close your position and the rate drops to 0 the same block.</div>
+      <div class="where">_dailyRate:315 · same test guards _payReferral:440, claim:641/649, release:677</div>
+    </div>
+
+    <div class="req">
+      <div class="lab"><span class="dot"></span>Requirement · earning rank = RULES, unless admin overrides</div>
+      <div class="txt">Your earning rank is <code class="inl">min( cached rank , max( stake-backed rank , rankFloor ) )</code>. The <b>rules</b> — group volume + active directs + a per-rank minimum self-stake — set the natural rank; a stake below the floor <b>throttles</b> earning down. An admin-assigned <b>rankFloor overrides the rules</b>, and wins when higher.</div>
+      <div class="where">_dailyRate:319–324 · promotion mirror in _effectiveRank:509</div>
+    </div>
+
+    <div class="req">
+      <div class="lab"><span class="dot"></span>Requirement · breakaway differential</div>
+      <div class="txt">You earn on the <b>gap</b> between your rank rate and your leg's strongest downline rate. When a downline reaches your rank (<code class="inl">myRate ≤ top</code>) that leg has <b>broken away</b> → 0. Income only ever winds down through breakaway, never through a downline unstake.</div>
+      <div class="where">_dailyRate:326 · tracker raised in _rollOne:411 &amp; _propagateRankUp</div>
+    </div>
+
+    <h3 class="blk"><span class="n">B2</span>The rules the gates read</h3>
+    <p class="muted">Natural rank needs <b style="color:var(--ink)">all three</b>: the group-volume + directs threshold (<code class="inl">rankFor</code>), AND the per-rank minimum self-stake (<code class="inl">minStakeForRank</code>). All three thresholds are <b style="color:var(--ink)">admin-tunable state</b> — <code class="inl">setRankRequirement(r, gv, directs, minSelfStake)</code>, the promotion lever. The rate per rank is fixed at <code class="inl">rank × 5%</code> (<code class="inl">rateForRank</code>).</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Rank</th><th>Group volume ≥</th><th>Directs ≥</th><th>Min self-stake ≥</th><th>Rate</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">1</td><td class="mono dim">1,000</td><td class="mono dim">1</td><td class="mono dim">25</td><td class="mono">5%</td></tr>
+          <tr><td class="mono">2</td><td class="mono dim">2,500</td><td class="mono dim">1</td><td class="mono dim">50</td><td class="mono">10%</td></tr>
+          <tr><td class="mono">3</td><td class="mono dim">10,000</td><td class="mono dim">1</td><td class="mono dim">100</td><td class="mono">15%</td></tr>
+          <tr><td class="mono">4</td><td class="mono dim">50,000</td><td class="mono dim">1</td><td class="mono dim">500</td><td class="mono">20%</td></tr>
+          <tr><td class="mono">5</td><td class="mono dim">200,000</td><td class="mono dim">2</td><td class="mono dim">1,000</td><td class="mono">25%</td></tr>
+          <tr><td class="mono">6</td><td class="mono dim">1,000,000</td><td class="mono dim">2</td><td class="mono dim">5,000</td><td class="mono">30%</td></tr>
+          <tr><td class="mono">7</td><td class="mono dim">5,000,000</td><td class="mono dim">3</td><td class="mono dim">25,000</td><td class="mono">35%</td></tr>
+          <tr><td class="mono">8</td><td class="mono dim">25,000,000</td><td class="mono dim">3</td><td class="mono dim">100,000</td><td class="mono">40%</td></tr>
+          <tr><td class="mono">9</td><td class="mono dim">100,000,000</td><td class="mono dim">4</td><td class="mono dim">500,000</td><td class="mono">45%</td></tr>
+          <tr><td class="mono">10</td><td class="mono dim">500,000,000</td><td class="mono dim">5</td><td class="mono dim">2,500,000</td><td class="mono">50%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="why"><span class="lab">? Reason</span><div>Rank is a <b>monotonic high-water mark</b> (once reached, kept) — but earning is re-priced live by <code class="inl">min-stake</code>, so a leader who withdraws their own stake keeps the title yet earns at the rank their remaining stake backs. The admin override exists so the company can seat a leader (or honor an off-chain arrangement) without waiting for organic volume.</div></div>
+
+    <h3 class="blk"><span class="n">B3</span>Processing — from a downline stake to a withdrawal</h3>
+    <div class="flow">
+      <div class="step"><div class="num">1</div><div class="body"><div class="h">Stake lands → <code>recordStake(staker, V)</code></div><div class="d">Staking credits the pool (§A) then calls in. Guarded <code class="inl">onlyStakingOrAuth</code>; a no-op when disabled or V=0. <span class="dim">leadership.sol:367</span></div></div></div>
+      <div class="step"><div class="num">2</div><div class="body"><div class="h">Staker's own legs settle first, then <code>activeStake += V</code></div><div class="d">Settling while still closed books nothing and re-stamps the clock — a revived member's dormant gap earns nothing. Then their rank is recomputed (a new self-stake can clear a floor). <span class="dim">recordStake:373–379</span></div></div></div>
+      <div class="step"><div class="num">3</div><div class="body"><div class="h">Volume rolls UP the binary tree → <code>_rollUp / _rollOne</code></div><div class="d">For each ancestor up to <code class="inl">depthCap</code>: settle that leg at the OLD rate, raise its breakaway tracker from the path below (<code class="inl">maxRateBelow</code> telescopes), add V to leg + group volume, recompute the ancestor's rank. <span class="dim">leadership.sol:386–427</span></div></div></div>
+      <div class="step"><div class="num">4</div><div class="body"><div class="h">Time passes → <code>_settle</code> books the accrual</div><div class="d">Each settle adds <code class="inl">dailyRate × secondsElapsed / secondsPerDay</code> into <code class="inl">legAccrued</code>. Every rate-changing event settles first, so a later change can never claw back what already accrued (loss-proof). <span class="dim">leadership.sol:340</span></div></div></div>
+      <div class="step"><div class="num">5</div><div class="body"><div class="h">Member claims → <code>claimPassive(leg)</code> / <code>claimPassiveBoth()</code></div><div class="d">Settles, then moves <code class="inl">legAccrued → heldIncomeOverride</code>. Blocked by the liveness gate (<code class="inl">STAKE_CLOSED</code>) unless you hold a live stake or an assigned rank. <span class="dim">leadership.sol:639 / 663</span></div></div></div>
+      <div class="step"><div class="num">6</div><div class="body"><div class="h">Member withdraws → <code>releaseHeld()</code></div><div class="d">Moves held override (+ referral) from the pool to your withdrawable vault balance via <code class="inl">balanceTransfer</code> (CEI). Reverts if the pool is short — the company keeps it funded. <span class="dim">leadership.sol:676 / 687</span></div></div></div>
+    </div>
+  </section>
+
+  <!-- ================= C · REFERRAL ================= -->
+  <section>
+    <div class="sec-head"><span class="sec-idx">C</span><h2>Referral — the flat unilevel bonus</h2><span class="tag">leadership.sol<br>_payReferral</span></div>
+    <p class="intro">Separate from the override: a one-shot bonus paid <b style="color:var(--ink)">up the affiliate tree</b> every time someone in your sponsor line stakes. Per-level rates, self-funded by the reserve set aside in §A.</p>
+
+    <div class="req">
+      <div class="lab"><span class="dot"></span>Requirement · the per-level plan &amp; the self-funding identity</div>
+      <div class="txt">Rates are a <b>PER-LEVEL array</b> — <code class="inl">referralLevelBps[i-1]</code> is level i's rate — <b>admin-tunable per level</b> via <code class="inl">setReferralLevels</code> (or the flat wrapper <code class="inl">setReferralPlan</code>). The reserve set aside per stake is the <b>SUM of all levels</b>, so what's paid out exactly equals what was reserved. Live default: <b>5% direct + 1% × 5 = 10%</b>.</div>
+      <div class="where">rates: setReferralLevels / setReferralPlan · reserve = Σ referralLevelBps (referralReserveBps)</div>
+    </div>
+
+    <div class="req">
+      <div class="lab"><span class="dot"></span>Requirement · a closed upline earns nothing</div>
+      <div class="txt">The same safety-net gate as override: an upline with <code class="inl">activeStake == 0 &amp;&amp; rankFloor == 0</code> is <b>skipped</b> — the walk continues to their upline, but they receive no referral while their own stake is closed.</div>
+      <div class="where">_payReferral:440</div>
+    </div>
+
+    <div class="code">
+      <div class="cap"><span class="fn">_payReferral(staker, V)</span><span class="loc">leadership.sol:430</span></div>
+<pre>uint256 maxLevel = referralLevelBps.length;       <span class="c">// walk one level per configured rate</span>
+<span class="k">for</span> (uint256 level = 1; level &lt;= maxLevel; level++) {
+    (up, ) = accounts.getAffiliate(up);            <span class="c">// walk the AFFILIATE tree (not the binary tree)</span>
+    <span class="g">if</span> (up == <span class="k">address</span>(0)) <span class="k">break</span>;
+    <span class="g">if</span> (activeStake[up] == 0 &amp;&amp; rankFloor[up] == 0) <span class="k">continue</span>; <span class="c">// GATE — closed upline skipped</span>
+    uint256 bps = referralLevelBps[level - 1];      <span class="c">// this level's admin-set rate</span>
+    uint256 amt = (V * bps) / BPS;
+    heldIncomeReferral[up] += amt;                  <span class="c">// held, released via releaseHeld()</span>
+    <span class="k">emit</span> ReferralPaid(up, staker, level, amt);
+}</pre>
+    </div>
+
+    <h3 class="blk"><span class="n">C1</span>Processing — one stake, up to six payouts</h3>
+    <div class="flow">
+      <div class="step"><div class="num">1</div><div class="body"><div class="h">Fires inside <code>recordStake</code>, after the volume roll-up</div><div class="d">Same trigger as the override; returns immediately if both rates are 0 (referral off). <span class="dim">recordStake:381 → _payReferral:430</span></div></div></div>
+      <div class="step"><div class="num">2</div><div class="body"><div class="h">Walk the affiliate tree, level 1 → 1+indirectLevels</div><div class="d">Distinct from the override's binary tree: referral uses <code class="inl">getAffiliate</code> (the sponsor line). Live depth = 6 levels (1 direct + 5 indirect).</div></div></div>
+      <div class="step"><div class="num">3</div><div class="body"><div class="h">Credit each eligible upline → <code>heldIncomeReferral[up]</code></div><div class="d">Amount = <code class="inl">V × bps / BPS</code>. Closed uplines are skipped (still counting the level). Accrues into the SAME held bucket as override.</div></div></div>
+      <div class="step"><div class="num">4</div><div class="body"><div class="h">Withdraw via the shared <code>releaseHeld()</code></div><div class="d">Override + referral release together, from the same pool, in one call. <span class="dim">leadership.sol:687</span></div></div></div>
+    </div>
+    <div class="why"><span class="lab">? Reason</span><div>Two different trees on purpose: the <b>override</b> follows the <b>binary</b> tree (placement) so leg balance matters; the <b>referral</b> follows the <b>affiliate</b> tree (who you personally sponsored). Self-funding means referral can never outrun its own reserve — it is Sybil-neutral by construction.</div></div>
+  </section>
+
+  <!-- ================= D · INVARIANTS ================= -->
+  <section>
+    <div class="sec-head"><span class="sec-idx">D</span><h2>Invariants that hold across both</h2><span class="tag">the rules that never bend</span></div>
+    <div class="req">
+      <div class="lab"><span class="dot"></span>Held-then-release</div>
+      <div class="txt">A claim only WRITES the ledger (<code class="inl">legAccrued → held</code>); <code class="inl">releaseHeld</code> is the only thing that moves USDT and it reverts if the pool is short. So the daily yield can never overdraw the pool — a shortfall <b>defers</b> a payout, it never bricks staking.</div>
+      <div class="where">_claimPassive:663 · _releaseHeldFor:687</div>
+    </div>
+    <div class="req">
+      <div class="lab"><span class="dot"></span>No demotion from a downline unstake</div>
+      <div class="txt">A downline closing never reduces an ancestor's group/leg volume, rank, or accrued passive — <code class="inl">recordUnstake</code> only shrinks the <b>closing member's own</b> self-stake. Override winds down solely through breakaway.</div>
+      <div class="where">recordUnstake:460</div>
+    </div>
+    <div class="req">
+      <div class="lab"><span class="dot"></span>Loss-proof settle-before-change</div>
+      <div class="txt">Every event that moves a rate — a downline stake, a rank change, a breakaway, a close, a revive — calls <code class="inl">_settle</code> first, pricing the elapsed days at the OLD rate. Nothing already earned can be re-priced by a later change.</div>
+      <div class="where">_settle:340, called from _rollOne, _setRankSettle, _claimPassive, record hooks</div>
+    </div>
+  </section>
+
+  <footer>
+    <p><b>Source of truth.</b> Every rule and snippet above is quoted from <span class="mono">chain/src/orbix/leadership.sol</span> and <span class="mono">chain/src/orbix/staking.sol</span> (== the deployed anvil pair leadership <span class="mono">0x9Fe6…3a6e</span> / staking <span class="mono">0x7023…ce2b</span>, chainId 31337). Line numbers are as of the safety-net + simplified-ranking + gas-optimization revision. Snippets are condensed for reading (comments trimmed, whitespace tightened) but not otherwise altered — read the files for the byte-exact logic.</p>
+    <p>Live config: overrideMultiplier <b>50 bps (0.5%)</b> · referral <b>5% + 1% × 5</b> · split <b>40 / 25 / 10 / 15</b> (+10% referral reserve inside the pool) · secondsPerDay <b>86,400</b>.</p>
+  </footer>
+</div>
+</body>
+</html>
