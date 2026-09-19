@@ -1,0 +1,611 @@
+<meta charset="utf-8">
+<title>ORBIX Strategic Partnership — Contract Explainer</title>
+<style>
+  :root{
+    --bg:#0e1521; --bg-2:#0a0f18; --surface:#16202f; --surface-2:#1d2a3d;
+    --border:#284058; --border-soft:#1e2c3f;
+    --text:#e7edf4; --muted:#8fa0b6; --faint:#647896;
+    --accent:#c8fa46; --accent-fill:#c8fa46; --on-accent:#0e1521; --accent-dim:#9bc72f;
+    --amber:#e7a94e; --sky:#5ec8e2; --rose:#e77c86; --bronze:#cd9b6a; --plat:#b9c6d6;
+    --ring:#22344a;
+    --shadow:0 1px 0 rgba(255,255,255,.03), 0 18px 40px -24px rgba(0,0,0,.7);
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --maxw:1080px;
+  }
+  @media (prefers-color-scheme: light){
+    :root{
+      --bg:#eef2f7; --bg-2:#e4eaf2; --surface:#ffffff; --surface-2:#f4f8fc;
+      --border:#d3dde9; --border-soft:#e3eaf3; --text:#132133; --muted:#4d5f75; --faint:#7688a0;
+      --accent:#4c7a06; --accent-fill:#bef23a; --on-accent:#13202f; --accent-dim:#5f8f0a;
+      --amber:#a96a12; --sky:#1683a1; --rose:#c0434f; --bronze:#9a6a3a; --plat:#5a708a; --ring:#cdd8e6;
+      --shadow:0 1px 0 rgba(255,255,255,.6), 0 18px 40px -26px rgba(30,50,80,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0e1521; --bg-2:#0a0f18; --surface:#16202f; --surface-2:#1d2a3d;
+    --border:#284058; --border-soft:#1e2c3f; --text:#e7edf4; --muted:#8fa0b6; --faint:#647896;
+    --accent:#c8fa46; --accent-fill:#c8fa46; --on-accent:#0e1521; --accent-dim:#9bc72f;
+    --amber:#e7a94e; --sky:#5ec8e2; --rose:#e77c86; --bronze:#cd9b6a; --plat:#b9c6d6; --ring:#22344a;
+    --shadow:0 1px 0 rgba(255,255,255,.03), 0 18px 40px -24px rgba(0,0,0,.7);
+  }
+  :root[data-theme="light"]{
+    --bg:#eef2f7; --bg-2:#e4eaf2; --surface:#ffffff; --surface-2:#f4f8fc;
+    --border:#d3dde9; --border-soft:#e3eaf3; --text:#132133; --muted:#4d5f75; --faint:#7688a0;
+    --accent:#4c7a06; --accent-fill:#bef23a; --on-accent:#13202f; --accent-dim:#5f8f0a;
+    --amber:#a96a12; --sky:#1683a1; --rose:#c0434f; --bronze:#9a6a3a; --plat:#5a708a; --ring:#cdd8e6;
+    --shadow:0 1px 0 rgba(255,255,255,.6), 0 18px 40px -26px rgba(30,50,80,.35);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:
+      radial-gradient(1100px 560px at 82% -12%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 60%),
+      var(--bg);
+    color:var(--text);font-family:var(--sans);line-height:1.6;font-size:16px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  section{padding:46px 0;border-top:1px solid var(--border-soft)}
+  h1,h2,h3{font-weight:700;letter-spacing:-.02em;text-wrap:balance;margin:0}
+  p{margin:0;max-width:66ch;color:var(--muted)}
+  p strong,li strong{color:var(--text);font-weight:600}
+  code,.mono{font-family:var(--mono)}
+  .num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+  a{color:var(--accent)}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);display:flex;align-items:center;gap:9px}
+  .eyebrow::before{content:"";width:22px;height:1px;background:var(--accent);display:inline-block;opacity:.8}
+  .sec-head{display:flex;flex-direction:column;gap:10px;margin-bottom:26px}
+  .sec-head h2{font-size:clamp(24px,3.4vw,32px)}
+  .sec-head p{font-size:16px}
+  .sym{font-family:var(--mono);font-size:.86em;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:1px 6px;color:var(--text);white-space:nowrap}
+
+  header.hero{padding:60px 0 40px}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:38px;align-items:center}
+  @media(max-width:840px){.hero-grid{grid-template-columns:1fr;gap:28px}}
+  .brand{display:flex;align-items:center;gap:11px;margin-bottom:24px}
+  .brand .dot{width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent)}
+  .brand b{font-family:var(--mono);letter-spacing:.34em;font-size:13px;text-transform:uppercase}
+  .brand .sub{font-family:var(--mono);font-size:11px;color:var(--faint);letter-spacing:.1em;border-left:1px solid var(--border);padding-left:11px}
+  .hero h1{font-size:clamp(31px,5vw,50px);line-height:1.05}
+  .hero h1 em{font-style:normal;color:var(--accent)}
+  .hero .lede{margin-top:18px;font-size:18px;max-width:54ch}
+  .statrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+  .stat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 15px;min-width:112px}
+  .stat .k{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+  .stat .v{font-size:21px;font-weight:700;margin-top:3px;font-variant-numeric:tabular-nums}
+  .stat .v small{font-size:12px;color:var(--muted);font-weight:600}
+  .src{margin-top:18px;font-family:var(--mono);font-size:12.5px;color:var(--faint);display:flex;gap:8px;flex-wrap:wrap}
+  .src b{color:var(--muted);font-weight:600}
+  .chartcard{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px 18px 12px;box-shadow:var(--shadow)}
+  .chartcard .ct{font-family:var(--mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);margin-bottom:8px}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:8px;font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+  .legend i{display:inline-block;width:11px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle}
+  canvas{display:block;width:100%}
+  #heroChart{height:230px}
+  #tlChart{height:220px}
+
+  .cards{display:grid;gap:16px}
+  .g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+  @media(max-width:900px){.g4{grid-template-columns:1fr 1fr}}
+  @media(max-width:760px){.g2,.g3{grid-template-columns:1fr}}
+  @media(max-width:520px){.g4{grid-template-columns:1fr}}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;box-shadow:var(--shadow)}
+  .card h3{font-size:16px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+  .card p{font-size:14.5px}
+  .card .ic{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;flex:none;background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent);font-family:var(--mono);font-size:13px;font-weight:700}
+  ul.tick{list-style:none;padding:0;margin:10px 0 0;display:flex;flex-direction:column;gap:9px}
+  ul.tick li{position:relative;padding-left:22px;font-size:14.5px;color:var(--muted)}
+  ul.tick li::before{content:"›";position:absolute;left:4px;top:-1px;color:var(--accent);font-weight:700}
+
+  /* tier cards */
+  .tier{position:relative;overflow:hidden}
+  .tier .tag{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+  .tier .rate{font-size:34px;font-weight:700;letter-spacing:-.03em;margin:2px 0 0;font-variant-numeric:tabular-nums;color:var(--accent)}
+  .tier .rate small{font-size:13px;color:var(--muted);font-weight:600;letter-spacing:0}
+  .tier .meta{display:flex;gap:16px;margin:12px 0;flex-wrap:wrap}
+  .tier .meta div{font-size:12.5px;color:var(--muted)}
+  .tier .meta b{display:block;color:var(--text);font-size:15px;font-variant-numeric:tabular-nums}
+  .tier .amts{font-family:var(--mono);font-size:12px;color:var(--muted);border-top:1px solid var(--border-soft);padding-top:10px}
+  .tier.bronze .rate,.tier.bronze .ic{color:var(--bronze)}
+  .tier.silver .rate,.tier.silver .ic{color:var(--sky)}
+  .tier.gold .rate,.tier.gold .ic{color:var(--amber)}
+  .tier.plat .rate,.tier.plat .ic{color:var(--plat)}
+
+  .tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:12px;background:var(--surface)}
+  table{border-collapse:collapse;width:100%;font-size:14px}
+  th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--border-soft);white-space:nowrap}
+  th{font-family:var(--mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);background:var(--surface-2);position:sticky;top:0}
+  td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr.tot td{font-weight:700;background:var(--surface-2);border-top:1px solid var(--border)}
+  .mut{color:var(--muted)}
+
+  .calc{background:linear-gradient(180deg,var(--surface),color-mix(in srgb,var(--surface) 88%,var(--bg-2)));border:1px solid var(--border);border-radius:16px;padding:22px;box-shadow:var(--shadow)}
+  .calc .bar{display:flex;align-items:center;gap:8px;margin-bottom:18px}
+  .calc .bar .led{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent)}
+  .calc .bar b{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .ctrls{display:flex;flex-wrap:wrap;gap:16px 22px;align-items:flex-end}
+  .field{display:flex;flex-direction:column;gap:7px}
+  .field label{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+  input[type=number]{width:170px;background:var(--surface-2);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:var(--mono);font-size:15px;padding:9px 11px}
+  .chip{font-family:var(--mono);font-size:12px;color:var(--muted);background:var(--surface-2);border:1px solid var(--border);border-radius:7px;padding:6px 9px;cursor:pointer}
+  .chip:hover{border-color:var(--accent)}
+  .readout{display:flex;flex-wrap:wrap;gap:12px;margin:20px 0}
+  .ro{flex:1;min-width:150px;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+  .ro .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+  .ro .v{font-size:23px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+  .ro.good .v{color:var(--accent)}.ro.sky .v{color:var(--sky)}.ro.amber .v{color:var(--amber)}
+  .note{font-size:12.5px;color:var(--faint);margin-top:6px;font-style:italic;max-width:74ch}
+  button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+  .pill{font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:999px;font-weight:700}
+  .pill.on{background:color-mix(in srgb,var(--accent) 20%,transparent);color:var(--accent)}
+  .pill.off{background:color-mix(in srgb,var(--amber) 18%,transparent);color:var(--amber)}
+
+  .flow{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+  .flow .node{flex:1;min-width:150px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px}
+  .flow .node .t{font-weight:700;font-size:14px;display:flex;align-items:center;gap:7px}
+  .flow .node .d{font-size:13px;color:var(--muted);margin-top:5px}
+  .flow .arr{align-self:center;color:var(--accent);font-family:var(--mono);font-size:20px;flex:none}
+  @media(max-width:760px){.flow .arr{transform:rotate(90deg)}}
+
+  .split{display:flex;height:34px;border-radius:9px;overflow:hidden;border:1px solid var(--border);margin-top:4px}
+  .split div{display:grid;place-items:center;font-family:var(--mono);font-size:11.5px;font-weight:700;color:var(--on-accent)}
+
+  .map td:first-child{color:var(--text);font-weight:600}
+  .map td .sym{white-space:normal}
+  footer{padding:34px 0 60px;color:var(--faint);font-size:13px;border-top:1px solid var(--border-soft)}
+  .xref{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:12px;color:var(--muted);text-decoration:none;border:1px solid var(--border);border-radius:8px;padding:5px 10px;margin-top:6px;margin-right:8px}
+  .toggle{position:fixed;top:14px;right:14px;z-index:10;background:var(--surface);border:1px solid var(--border);color:var(--muted);font-family:var(--mono);font-size:12px;padding:7px 11px;border-radius:9px;cursor:pointer}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<button class="toggle" id="themeBtn" aria-label="Toggle light or dark theme">◐ theme</button>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="brand"><span class="dot"></span><b>Orbix</b><span class="sub">Strategic Partnership</span></div>
+    <div class="hero-grid">
+      <div>
+        <h1>Partner with ORBIX. Own an <em>allocation</em>. Earn a share.</h1>
+        <p class="lede">A number-accurate walkthrough of <code>OrbixVesting</code> — the strategic-partnership program. Pay <strong>USDT</strong> and receive an ORBIX allocation at a <strong>fixed $0.025</strong>, locked for 6 months then released <strong>2.5% every 30 days</strong> over 40 months. Every deposit also pays a <strong>referral</strong> up your sponsor tree and funds a <strong>tier-weighted global profit pool</strong>. Every figure is read straight from the source.</p>
+        <div class="statrow">
+          <div class="stat"><div class="k">Allocation</div><div class="v">100<small>M ORBIX</small></div></div>
+          <div class="stat"><div class="k">Price</div><div class="v">$0.025<small> / ORBIX</small></div></div>
+          <div class="stat"><div class="k">Cliff</div><div class="v">6<small> months</small></div></div>
+          <div class="stat"><div class="k">Release</div><div class="v">2.5<small>% / 30d</small></div></div>
+        </div>
+        <div class="src"><span><b>source:</b> projects/orbix/contracts/vesting.sol</span></div>
+      </div>
+      <div>
+        <div class="chartcard">
+          <div class="ct">Allocation released over time (% of your ORBIX)</div>
+          <canvas id="heroChart" height="230" aria-label="Cumulative ORBIX released: flat for the 6-month cliff, then 2.5% every 30 days over 40 months"></canvas>
+          <div class="legend">
+            <span><i style="background:var(--amber);height:8px;width:2px"></i>Cliff ends (mo 6)</span>
+            <span><i style="background:var(--sky)"></i>Released 2.5%/30d</span>
+            <span><i style="background:var(--accent)"></i>Fully vested (mo 46)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- WHAT YOU GET -->
+<section id="streams">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">00 · What you get</div>
+      <h2>Three ways a partnership pays</h2>
+      <p>One USDT deposit does three things: it buys you a <strong>vesting ORBIX allocation</strong>, it pays a <strong>referral</strong> up your sponsor tree, and it feeds a <strong>global profit pool</strong> that active partners share by tier. The deposit itself splits <strong>5% global pool · 10% referral · 40% liquidity · 20% trading · 25% operations</strong>.</p>
+    </div>
+    <div class="cards g3">
+      <div class="card">
+        <h3><span class="ic">◇</span>Your ORBIX allocation</h3>
+        <p>USDT converts to ORBIX at a fixed <strong>$0.025</strong> (<span class="sym">orbix = usdt × 40</span>). It's <strong>reserved for you at deposit</strong> from the contract's ORBIX, locked 6 months, then released 2.5% every 30 days.</p>
+        <ul class="tick">
+          <li>Fixed price — <strong>no market timing</strong>.</li>
+          <li>Fully backed the moment you deposit.</li>
+          <li>Withdrawn with <span class="sym">claim</span> / <span class="sym">claimAll</span>.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3><span class="ic" style="background:color-mix(in srgb,var(--rose) 16%,transparent);color:var(--rose)">%</span>Referral income</h3>
+        <p>Every deposit beneath you earns USDT up the sponsor tree: <strong>5%</strong> to the direct sponsor, then <strong>1%</strong> for five more levels — <strong>held</strong> for you until you collect it.</p>
+        <ul class="tick">
+          <li>Paid in <strong>USDT</strong>, six levels deep.</li>
+          <li>Held per upline; collect with <span class="sym">claimReferral</span> → your vault balance.</li>
+          <li>Levels with no upline roll into operations.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3><span class="ic" style="background:color-mix(in srgb,var(--sky) 16%,transparent);color:var(--sky)">★</span>Global profit share</h3>
+        <p><strong>5% of every deposit</strong> feeds a global pool split across four tiers. Your tier is set by how much ORBIX you still hold; within your tier you share pro-rata by holding. It's a <strong>monthly dividend</strong> — collect once per calendar month (the window resets on the 1st, 00:00 UTC).</p>
+        <ul class="tick">
+          <li>Bronze 10% · Silver 20% · Gold 30% · Platinum 40%.</li>
+          <li>Pro-rata by ORBIX holding within your tier.</li>
+          <li><span class="sym">claimGlobal</span> once per month → your vault balance.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VESTING SCHEDULE -->
+<section id="schedule">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">01 · The vesting schedule</div>
+      <h2>Six-month cliff, then 2.5% every 30 days for 40 months</h2>
+      <p>Your allocation is locked for a <strong>6-month (180-day) cliff</strong>. The first slice releases <strong>30 days after the cliff</strong> (day 210), then <strong>2.5% every 30 days</strong> until 100% has been returned — <strong>40 slices</strong> in all. A "month" is always exactly 30 days. Collect one slice or many at once — accumulated slices are always claimable.</p>
+    </div>
+    <div class="cards g4">
+      <div class="card"><h3><span class="ic">1</span>Deposit</h3><p>Pay USDT (min <strong>$10</strong>). You receive <span class="sym">usdt × 40</span> ORBIX, reserved and locked. A vesting position opens with <span class="sym">lockEnd = now + 180 days</span>.</p></div>
+      <div class="card"><h3><span class="ic" style="background:color-mix(in srgb,var(--amber) 16%,transparent);color:var(--amber)">2</span>Cliff</h3><p>For 180 days nothing releases — <span class="sym">_vested</span> returns 0 before <span class="sym">lockEnd</span>. Your allocation still counts toward your tier and global-pool share.</p></div>
+      <div class="card"><h3><span class="ic" style="background:color-mix(in srgb,var(--sky) 16%,transparent);color:var(--sky)">3</span>Release</h3><p>From day 210, <strong>2.5% / 30 days</strong> (<span class="sym">VESTING_BPS = 250</span>). Cumulative vested is <span class="sym">M × 2.5% × slices</span>, capped at your allocation M.</p></div>
+      <div class="card"><h3><span class="ic">4</span>Complete</h3><p>After 40 slices (≈ month 46 from deposit) the full allocation is yours and the position closes. As you claim, your holding falls — and your tier can too.</p></div>
+    </div>
+    <p class="note" style="margin-top:14px">The first release lands 30 days <em>after</em> the cliff because slices count from <span class="sym">lockEnd</span>: <span class="sym">slices = (now − lockEnd) / 30d</span>, so slice 1 needs <span class="sym">now ≥ lockEnd + 30d</span>. Total lifecycle: 6-month cliff + 40 monthly slices ≈ 46 months.</p>
+  </div>
+</section>
+
+<!-- CALCULATOR -->
+<section id="calculator">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">02 · Partnership calculator</div>
+      <h2>See a full allocation, deposit to fully vested</h2>
+      <p>Enter a USDT deposit. The math is the contract's exactly: <span class="sym">orbix = usdt × 40</span>; each monthly slice is <span class="sym">orbix × 2.5%</span>; the schedule is a 6-month cliff then 40 slices. Your <strong>tier</strong> is read from the ORBIX you hold.</p>
+    </div>
+    <div class="calc">
+      <div class="bar"><span class="led"></span><b>Allocation calculator</b></div>
+      <div class="ctrls">
+        <div class="field">
+          <label for="amtIn">Deposit (USDT)</label>
+          <input type="number" id="amtIn" value="1000" min="10" step="10" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label>Quick amounts</label>
+          <div id="chips" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="ro good"><div class="k">ORBIX allocation</div><div class="v num" id="roOrbix">—</div></div>
+        <div class="ro sky"><div class="k">Monthly release (after cliff)</div><div class="v num" id="roMonthly">—</div></div>
+        <div class="ro amber"><div class="k">Tier reached</div><div class="v" id="roTier">—</div></div>
+        <div class="ro"><div class="k">First unlock · fully vested</div><div class="v num" id="roDates">—</div></div>
+      </div>
+      <div class="readout" style="margin-top:0">
+        <div class="ro"><div class="k">Global pool (stays)</div><div class="v num" id="roGlob">—</div></div>
+        <div class="ro"><div class="k">Referral up your tree</div><div class="v num" id="roRef">—</div></div>
+        <div class="ro"><div class="k">To liquidity</div><div class="v num" id="roLiq">—</div></div>
+        <div class="ro"><div class="k">To trading wallet</div><div class="v num" id="roTrade">—</div></div>
+        <div class="ro"><div class="k">To operation wallet</div><div class="v num" id="roOper">—</div></div>
+      </div>
+      <div class="chartcard" style="border-radius:12px;background:var(--surface-2)">
+        <div class="ct" id="tlTitle">Timeline — allocation released over 46 months</div>
+        <canvas id="tlChart" height="220" aria-label="Allocation release timeline: flat through the 6-month cliff, then 40 monthly slices of 2.5%"></canvas>
+        <div class="legend">
+          <span><i style="background:var(--sky)"></i>ORBIX released (cumulative)</span>
+          <span><i style="background:var(--amber);height:8px;width:2px"></i>Cliff ends</span>
+        </div>
+      </div>
+      <p class="note">The five split readouts are shares of <em>this</em> deposit: 5% global pool (kept), 10% referral (5% direct + 1%×5, held for uplines), 40% liquidity, 20% trading wallet, 25% operation wallet. Referral only accrues where you have registered uplines; unfilled levels roll into the operation wallet.</p>
+    </div>
+  </div>
+</section>
+
+<!-- DEPOSIT SPLIT -->
+<section id="split">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">03 · Where a deposit goes</div>
+      <h2>Every deposit splits 5 / 10 / 40 / 20 / 25</h2>
+      <p>The contract routes each USDT deposit five ways. The <strong>5% global pool</strong> and the <strong>10% referral</strong> stay in the contract until members collect them (both are then credited to the member's vault balance); liquidity / trading / operations leave at deposit time.</p>
+    </div>
+    <div class="cards g2" style="align-items:start">
+      <div class="card">
+        <h3>The deposit split</h3>
+        <div class="split" id="splitBar"></div>
+        <div class="legend" style="margin-top:10px">
+          <span><i style="background:var(--sky)"></i>Global pool 5% (stays)</span>
+          <span><i style="background:var(--rose)"></i>Referral 10%</span>
+          <span><i style="background:var(--accent)"></i>Liquidity 40%</span>
+          <span><i style="background:var(--plat)"></i>Trading 20%</span>
+          <span><i style="background:var(--amber)"></i>Operations 25%</span>
+        </div>
+        <p class="note" style="margin-top:10px">Set by <span class="sym">setSplit(global, referral, liquidity, trading)</span> — operations is the remainder. Referral is divided per level by <span class="sym">setReferralLevels</span> (default 5% + 1%×5 = 10%).</p>
+      </div>
+      <div class="card">
+        <h3>Where each slice goes</h3>
+        <ul class="tick">
+          <li><strong>5% global</strong> — kept in the contract, accrued to the four tier sub-pools; claimed via <span class="sym">claimGlobal</span> → the member's vault balance.</li>
+          <li><strong>10% referral</strong> — held per upline as USDT at deposit; collected via <span class="sym">claimReferral</span> → the member's vault balance; unfilled levels go to operations.</li>
+          <li><strong>40% liquidity</strong> — added to the ORBIX/USDT pool via <span class="sym">liquidity.addLiquidityUSDT</span> (held in <span class="sym">liquidityBuffer</span> if the LP isn't ready yet).</li>
+          <li><strong>20% trading</strong> → the <span class="sym">tradingWallet</span>; <strong>25% operations</strong> → the <span class="sym">operationWallet</span>. Both default to the deployer and are reassignable.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="cards g2" style="align-items:start;margin-top:16px">
+      <div class="card">
+        <h3>Self-custody &amp; ORBIX backing</h3>
+        <ul class="tick">
+          <li>The admin funds the contract by transferring <strong>ORBIX</strong> to it; each deposit reserves its allocation.</li>
+          <li>A deposit reverts <span class="sym">UNBACKED</span> if the ORBIX balance can't cover all outstanding allocations plus the new one.</li>
+          <li>Invariant: <span class="sym">ORBIX.balanceOf(this) ≥ totalOutstandingOrbix</span> — always. Program cap: <strong>100,000,000 ORBIX</strong>.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Member USDT stays</h3>
+        <p>After a deposit, the contract holds the <strong>5% global pool</strong> and the <strong>10% held referral</strong> (plus any liquidity that couldn't be routed yet); trading and operations have already left. When a member collects, that USDT moves into the <strong>OrbixAssets vault</strong> and is credited to their balance. USDT can't be rescued out — it's member money, and the liquidity buffer has a bounded withdraw.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TIERS + GLOBAL POOL -->
+<section id="tiers">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">04 · Tiers &amp; the global pool</div>
+      <h2>Hold more ORBIX, earn a bigger share</h2>
+      <p>The <strong>5% global pool</strong> is split into four tier sub-pools — <strong>Bronze 10% · Silver 20% · Gold 30% · Platinum 40%</strong>. Your tier is decided by the ORBIX you <strong>currently hold</strong> (allocated minus what you've claimed). Deposit more to rank up; as you claim over 40 months your holding falls, so a partner naturally ranks down and eventually out. Within a tier, members share that sub-pool pro-rata by holding.</p>
+    </div>
+    <div class="cards g4">
+      <div class="card tier bronze">
+        <div class="tag">Tier 1 · Bronze</div>
+        <div class="rate">10<small>% of pool</small></div>
+        <div class="meta"><div>Min holding<b>40,000 ORBIX</b></div><div>≈ deposit<b>$1,000</b></div></div>
+        <div class="amts">holding ≥ 40k &amp; &lt; 100k</div>
+      </div>
+      <div class="card tier silver">
+        <div class="tag">Tier 2 · Silver</div>
+        <div class="rate">20<small>% of pool</small></div>
+        <div class="meta"><div>Min holding<b>100,000 ORBIX</b></div><div>≈ deposit<b>$2,500</b></div></div>
+        <div class="amts">holding ≥ 100k &amp; &lt; 200k</div>
+      </div>
+      <div class="card tier gold">
+        <div class="tag">Tier 3 · Gold</div>
+        <div class="rate">30<small>% of pool</small></div>
+        <div class="meta"><div>Min holding<b>200,000 ORBIX</b></div><div>≈ deposit<b>$5,000</b></div></div>
+        <div class="amts">holding ≥ 200k &amp; &lt; 400k</div>
+      </div>
+      <div class="card tier plat">
+        <div class="tag">Tier 4 · Platinum</div>
+        <div class="rate">40<small>% of pool</small></div>
+        <div class="meta"><div>Min holding<b>400,000 ORBIX</b></div><div>≈ deposit<b>$10,000</b></div></div>
+        <div class="amts">holding ≥ 400k</div>
+      </div>
+    </div>
+    <p class="note" style="margin-top:14px">Floors set by <span class="sym">setTierFloors</span>; sub-pool weights by <span class="sym">setTierPoolBps</span> (must sum to 100%). A holding below 40,000 ORBIX earns no global share. If a tier currently has no members, that sub-pool's slice rolls into operations. A depositor's brand-new allocation doesn't earn from its own deposit's global cut — only holdings that were already active do. <strong>Collection is monthly:</strong> <span class="sym">claimGlobal</span> can be called at most once per <strong>calendar month</strong> — the window resets at 00:00 UTC on the 1st (<span class="sym">currentEpoch = year*12 + month-1</span>) per member; each calendar month's pool is snapshotted in <span class="sym">monthlyGlobalPool</span>. Your accrual is continuous and can't be front-run — the monthly gate only sets how often you sweep it to your vault balance. (The vesting release schedule is separate and stays on 30-day slices.)</p>
+  </div>
+</section>
+
+<!-- REFERRAL -->
+<section id="referral">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">05 · The referral plan</div>
+      <h2>Six levels up your sponsor tree, earned in USDT</h2>
+      <p>Ten percent of every deposit is earned up the <strong>referral (sponsor) tree</strong> read from <code>OrbixAccounts</code>: 5% to the direct sponsor, then 1% for five more levels. It's <strong>held</strong> for each upline and collected with <span class="sym">claimReferral</span>, which credits it to your <strong>OrbixAssets vault balance</strong>.</p>
+    </div>
+    <div class="tbl-wrap">
+      <table><thead><tr><th>Level</th><th>Relationship</th><th class="n">Rate</th><th class="n">On a $1,000 deposit</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Direct sponsor</td><td class="n">5%</td><td class="n">$50.00</td></tr>
+        <tr><td>2</td><td>2nd upline</td><td class="n">1%</td><td class="n">$10.00</td></tr>
+        <tr><td>3</td><td>3rd upline</td><td class="n">1%</td><td class="n">$10.00</td></tr>
+        <tr><td>4</td><td>4th upline</td><td class="n">1%</td><td class="n">$10.00</td></tr>
+        <tr><td>5</td><td>5th upline</td><td class="n">1%</td><td class="n">$10.00</td></tr>
+        <tr><td>6</td><td>6th upline</td><td class="n">1%</td><td class="n">$10.00</td></tr>
+        <tr class="tot"><td>Total</td><td>6 levels</td><td class="n">10%</td><td class="n">$100.00</td></tr>
+      </tbody></table>
+    </div>
+    <p class="note" style="margin-top:14px">Configured by <span class="sym">setReferralLevels([500,100,100,100,100,100])</span>. The walk climbs <span class="sym">accounts.getAffiliate</span> and stops at the top of the tree; any level without a registered upline sends its slice to the operation wallet. Each level's USDT is accrued to the upline's <span class="sym">heldReferral</span> at deposit and collected later via <span class="sym">claimReferral</span>.</p>
+  </div>
+</section>
+
+<!-- SAFETY -->
+<section id="safety">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">06 · Built to be safe</div>
+      <h2>Where your value lives — and what can't touch it</h2>
+    </div>
+    <div class="cards g3">
+      <div class="card"><h3><span class="ic">🔒</span>Reserved at deposit</h3><p>Your ORBIX allocation is backed the instant you deposit — the contract must already hold enough ORBIX to cover every outstanding allocation, or the deposit reverts <span class="sym">UNBACKED</span>.</p></div>
+      <div class="card"><h3><span class="ic">$</span>Member USDT stays funded</h3><p>The 5% global pool and 10% held referral stay in the contract until members collect, so they always back <span class="sym">claimGlobal</span> and <span class="sym">claimReferral</span>. Trading and operations leave at deposit time and never touch them.</p></div>
+      <div class="card"><h3><span class="ic">⛓</span>Credited to your vault</h3><p>Collected referral + global USDT is moved into the <strong>OrbixAssets vault</strong> and credited to your balance. This needs the contract to be an accounts admin — a privilege it uses <em>only</em> to call <span class="sym">creditBalance</span>; its code never moves staking or membership principal.</p></div>
+    </div>
+    <div class="cards g2" style="margin-top:16px">
+      <div class="card"><h3><span class="ic">♺</span>Rescue is fenced</h3><p><span class="sym">rescueToken</span> can move ORBIX only <strong>above</strong> the reserved (outstanding) amount, and USDT not at all. The only USDT that leaves via admin is the bounded <span class="sym">withdrawLiquidityBuffer</span> / <span class="sym">withdrawGlobalUndistributed</span>.</p></div>
+      <div class="card"><h3><span class="ic">⏸</span>Pause protects entries</h3><p>Deposits and pool top-ups can be paused in an emergency, but <strong>claims stay open</strong> — members can always release vested ORBIX and claim their referral/global USDT.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTRACT MAP -->
+<section id="verify">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">07 · Parity check</div>
+      <h2>Every claim, mapped to the contract</h2>
+      <p>Verify this page against <code>vesting.sol</code>. Each rule resolves to a concrete constant, function, or branch — the contract is the source of truth.</p>
+    </div>
+    <div class="tbl-wrap map">
+      <table id="mapTbl"><thead><tr><th>Rule in plain language</th><th>Where it lives in the contract</th><th class="n">Value</th></tr></thead><tbody></tbody></table>
+    </div>
+    <p class="note" style="margin-top:14px">Constants shown are the contract defaults; <span class="sym">setOrbixPerUsdt</span> / <span class="sym">setSplit</span> / <span class="sym">setReferralLevels</span> / <span class="sym">setTierFloors</span> / <span class="sym">setTierPoolBps</span> can retune them within the coded guards.</p>
+    <div>
+      <a class="xref" href="./staking-explainer.html">↔ Staking program explainer</a>
+      <a class="xref" href="./referral-explainer.html">↔ Referral program explainer</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">ORBIX Strategic Partnership — contract explainer · generated from <code>projects/orbix/contracts/vesting.sol</code>. Figures are contract defaults. Not financial advice.</div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var BPS=10000, VEST_BPS=250, CLIFF_M=6, VEST_M=40, TOTAL_M=46, ORBIX_PER_USDT=40, PRICE=0.025;
+  var GLOB_BPS=500, REF_BPS=1000, LIQ_BPS=4000, TRD_BPS=2000, OPER_BPS=2500; // split: 5/10/40/20/25
+  var tierFloorOrbix=[40000,100000,200000,400000]; // Bronze/Silver/Gold/Platinum
+  var tierNames=["—","Bronze","Silver","Gold","Platinum"];
+  var $=function(s,r){return (r||document).querySelector(s);};
+  var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));};
+  var fmtN=function(n){return Math.round(n).toLocaleString("en-US");};
+  var fmtUSD=function(n){var d=n<100?2:0; return "$"+(Math.round(n*100)/100).toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d});};
+  function cssvar(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+
+  /* theme */
+  $("#themeBtn").addEventListener("click",function(){
+    var cur=document.documentElement.getAttribute("data-theme");
+    if(!cur){cur=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}
+    document.documentElement.setAttribute("data-theme",cur==="dark"?"light":"dark");
+    drawHero(); drawTimeline();
+  });
+
+  /* split bar (5 / 10 / 40 / 20 / 25) */
+  (function(){
+    var bar=$("#splitBar"); if(!bar) return;
+    [["5%","var(--sky)","var(--on-accent)"],["10%","var(--rose)","#fff"],["40%","var(--accent)","var(--on-accent)"],["20%","var(--plat)","var(--on-accent)"],["25%","var(--amber)","var(--on-accent)"]]
+      .forEach(function(s){var d=document.createElement("div");d.style.flex=parseInt(s[0],10);d.style.background=s[1];d.style.color=s[2];d.textContent=s[0];bar.appendChild(d);});
+  })();
+
+  /* ---------- calculator ---------- */
+  var amt=1000;
+  function tierOf(orbix){
+    if(orbix>=tierFloorOrbix[3]) return 4;
+    if(orbix>=tierFloorOrbix[2]) return 3;
+    if(orbix>=tierFloorOrbix[1]) return 2;
+    if(orbix>=tierFloorOrbix[0]) return 1;
+    return 0;
+  }
+  function renderChips(){
+    var box=$("#chips"); box.innerHTML="";
+    [100,1000,2500,5000,10000].forEach(function(a){
+      var b=document.createElement("button"); b.className="chip"; b.type="button";
+      b.textContent="$"+a.toLocaleString("en-US");
+      b.addEventListener("click",function(){ amt=a; $("#amtIn").value=a; calc(); });
+      box.appendChild(b);
+    });
+  }
+  function calc(){
+    var orbix=amt*ORBIX_PER_USDT;
+    var monthly=orbix*VEST_BPS/BPS;               // 2.5% of allocation per slice
+    var t=tierOf(orbix);
+    $("#roOrbix").textContent=fmtN(orbix)+" ORBIX";
+    $("#roMonthly").textContent=fmtN(monthly)+" ORBIX";
+    $("#roTier").textContent = t===0 ? "None (<40k)" : tierNames[t];
+    $("#roDates").textContent="mo 7 · mo 46";
+    $("#roGlob").textContent=fmtUSD(amt*GLOB_BPS/BPS)+"  (5%)";
+    $("#roRef").textContent=fmtUSD(amt*REF_BPS/BPS)+"  (10%)";
+    $("#roLiq").textContent=fmtUSD(amt*LIQ_BPS/BPS)+"  (40%)";
+    $("#roTrade").textContent=fmtUSD(amt*TRD_BPS/BPS)+"  (20%)";
+    $("#roOper").textContent=fmtUSD(amt*OPER_BPS/BPS)+"  (25%)";
+    $("#tlTitle").textContent="Timeline — "+fmtN(orbix)+" ORBIX · 6-month cliff, then 40 slices of "+fmtN(monthly)+" ORBIX";
+    drawTimeline();
+  }
+  $("#amtIn").addEventListener("input",function(){ var v=parseFloat(this.value); amt=v>0?v:0; calc(); });
+
+  /* ---------- canvas setup ---------- */
+  function setup(cv){
+    var dpr=Math.min(devicePixelRatio||1,2), r=cv.getBoundingClientRect();
+    var H=Math.round(r.height)||parseInt(cv.getAttribute("height"),10);
+    cv.width=Math.round(r.width*dpr); cv.height=Math.round(H*dpr);
+    var ctx=cv.getContext("2d"); ctx.setTransform(dpr,0,0,dpr,0,0);
+    return {ctx:ctx,w:r.width,h:H};
+  }
+  /* cumulative % released vs month: 0 for m<=CLIFF, then 2.5%*(m-CLIFF) capped 100 (first slice at CLIFF+1) */
+  function releasedPct(m){ if(m<=CLIFF_M) return 0; return Math.min(100, (VEST_BPS/BPS)*100*(m-CLIFF_M)); }
+
+  function drawHero(prog){
+    var cv=$("#heroChart"); if(!cv) return; var s=setup(cv), ctx=s.ctx, W=s.w, H=s.h;
+    var padL=34, padR=10, padT=12, padB=26; var gw=W-padL-padR, gh=H-padT-padB;
+    ctx.clearRect(0,0,W,H);
+    var grid=cssvar("--border-soft")||"#1e2c3f", faint=cssvar("--faint")||"#647896";
+    ctx.strokeStyle=grid; ctx.lineWidth=1; ctx.font="10px "+(cssvar("--mono")||"monospace"); ctx.fillStyle=faint;
+    [0,25,50,75,100].forEach(function(p){
+      var y=padT+gh-(p/100)*gh;
+      ctx.globalAlpha=.6; ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(W-padR,y); ctx.stroke(); ctx.globalAlpha=1;
+      ctx.textAlign="right"; ctx.fillText(p+"%", padL-6, y+3);
+    });
+    ctx.textAlign="center";
+    [0,12,24,36,46].forEach(function(m){ var x=padL+(m/TOTAL_M)*gw; ctx.fillText(m+"mo", x, H-8); });
+    // cliff marker
+    var amber=cssvar("--amber")||"#e7a94e", sky=cssvar("--sky")||"#5ec8e2", acc=cssvar("--accent")||"#c8fa46";
+    var xc=padL+(CLIFF_M/TOTAL_M)*gw;
+    ctx.strokeStyle=amber; ctx.setLineDash([4,3]); ctx.beginPath(); ctx.moveTo(xc,padT); ctx.lineTo(xc,padT+gh); ctx.stroke(); ctx.setLineDash([]);
+    // release curve
+    var P=(prog==null?1:prog), lastM=TOTAL_M*P;
+    ctx.beginPath(); ctx.moveTo(padL,padT+gh);
+    for(var m=0;m<=lastM;m+=0.25){ var y=padT+gh-(releasedPct(m)/100)*gh; ctx.lineTo(padL+(m/TOTAL_M)*gw,y); }
+    ctx.strokeStyle=sky; ctx.lineWidth=2.4; ctx.lineCap="round"; ctx.stroke();
+    if(P>=1){ var xe=padL+(TOTAL_M/TOTAL_M)*gw, ye=padT+gh-gh; ctx.beginPath(); ctx.arc(xe,ye,3.4,0,Math.PI*2); ctx.fillStyle=acc; ctx.fill(); }
+  }
+
+  function drawTimeline(prog){
+    var cv=$("#tlChart"); if(!cv) return; var s=setup(cv), ctx=s.ctx, W=s.w, H=s.h;
+    var orbix=amt*ORBIX_PER_USDT;
+    var padL=8, padR=8, padT=14, padB=26; var gw=W-padL-padR, gh=H-padT-padB;
+    ctx.clearRect(0,0,W,H);
+    var grid=cssvar("--border-soft")||"#1e2c3f", faint=cssvar("--faint")||"#647896",
+        sky=cssvar("--sky")||"#5ec8e2", amber=cssvar("--amber")||"#e7a94e";
+    function X(m){return padL+(m/TOTAL_M)*gw;}
+    function Y(v){return padT+gh-(v/100)*gh;}    // v = % of allocation
+    ctx.strokeStyle=grid; ctx.lineWidth=1; ctx.font="10px "+(cssvar("--mono")||"monospace"); ctx.fillStyle=faint; ctx.textAlign="center";
+    ctx.beginPath(); ctx.moveTo(padL,padT+gh); ctx.lineTo(W-padR,padT+gh); ctx.stroke();
+    for(var m=0;m<=TOTAL_M;m+=6){ var x=X(m); ctx.globalAlpha=.35; ctx.beginPath(); ctx.moveTo(x,padT); ctx.lineTo(x,padT+gh); ctx.stroke(); ctx.globalAlpha=1; ctx.fillText(m+"mo",x,H-8); }
+    var xu=X(CLIFF_M);
+    ctx.strokeStyle=amber; ctx.lineWidth=2; ctx.setLineDash([4,3]); ctx.beginPath(); ctx.moveTo(xu,padT); ctx.lineTo(xu,padT+gh); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle=amber; ctx.fillText("cliff", xu, padT+9);
+    var P=(prog==null?1:prog), lastM=TOTAL_M*P;
+    ctx.beginPath(); ctx.moveTo(X(0),Y(0));
+    for(var mm=0;mm<=lastM;mm+=0.25){ ctx.lineTo(X(mm),Y(releasedPct(mm))); }
+    ctx.strokeStyle=sky; ctx.lineWidth=2.4; ctx.lineCap="round"; ctx.stroke();
+    ctx.lineTo(X(Math.min(lastM,TOTAL_M)),Y(0)); ctx.lineTo(X(0),Y(0)); ctx.closePath();
+    ctx.globalAlpha=.10; ctx.fillStyle=sky; ctx.fill(); ctx.globalAlpha=1;
+  }
+
+  /* ---------- contract map ---------- */
+  (function(){
+    var rows=[
+      ["USDT → ORBIX at a fixed 0.025","orbixPerUsdt · orbix = usdt × rate / 1e18","40e18 (×40)"],
+      ["Minimum deposit","minDeposit","10 USDT"],
+      ["Program allocation cap","TOTAL_ALLOCATION_CAP","100,000,000 ORBIX"],
+      ["Six-month cliff","CLIFF = 6 × 30 × secondsPerDay","180 days"],
+      ["Release rate per slice","VESTING_BPS · claim(index)","250 bps (2.5%)"],
+      ["First slice, 40 total","_vested → M × 2.5% × (now−lockEnd)/30d","slice 1 at lockEnd+30d"],
+      ["Reserved & backed at deposit","deposit → require ORBIX bal ≥ outstanding+new","reverts UNBACKED"],
+      ["Deposit split (5 ways)","global/referral/liquidity/trading/operation Bps","5/10/40/20/25%"],
+      ["Referral, six levels, HELD","_payReferral → heldReferral; claimReferral → vault","[5,1,1,1,1,1]%"],
+      ["Liquidity slice → LP","_routeLiquidity → liquidity.addLiquidityUSDT","40% (buffered if LP unready)"],
+      ["Trading + operation wallets","tradingWallet / operationWallet (default deployer)","20% / 25%"],
+      ["Global pool = 4 tier sub-pools","_accrueGlobalCut → tierPoolBps","10/20/30/40%"],
+      ["Tier by ORBIX holding","_tierOf(outstandingOrbix)","40k/100k/200k/400k"],
+      ["Pro-rata within a tier","accPerOrbix[tier] · bandTotalOrbix[tier]","by holding"],
+      ["Global dividend → vault, once/month","claimGlobal() gated by _monthKey/lastClaimEpoch","1× per calendar month (1st, UTC)"],
+      ["Empty tier → stays; unfilled ref → op","globalUndistributed / operationWallet","bounded withdraws"],
+      ["ORBIX solvency invariant","balanceOf(this) ≥ totalOutstandingOrbix","always"],
+      ["Credits USDT income to the vault","assets.creditBalance (referral + global)","accounts admin"],
+      ["Pause blocks deposits, not claims","setPaused(bool) · whenNotPaused","claims stay open"]
+    ];
+    var tb=$("#mapTbl tbody");
+    rows.forEach(function(r){
+      var tr=document.createElement("tr");
+      tr.innerHTML='<td>'+r[0]+'</td><td><span class="sym">'+r[1]+'</span></td><td class="n"><span class="mono">'+r[2]+'</span></td>';
+      tb.appendChild(tr);
+    });
+  })();
+
+  window.addEventListener("resize",function(){drawHero(); drawTimeline();});
+  var reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  renderChips(); calc();
+  if(reduce){ drawHero(); drawTimeline(); }
+  else{
+    var t0=null;
+    function anim(ts){ if(t0==null)t0=ts; var p=Math.min(1,(ts-t0)/900); var e=1-Math.pow(1-p,3); drawHero(e); drawTimeline(e); if(p<1)requestAnimationFrame(anim); }
+    requestAnimationFrame(anim);
+  }
+})();
+</script>
